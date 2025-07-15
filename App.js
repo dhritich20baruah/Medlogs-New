@@ -1,11 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TouchableOpacity, Modal, Alert, TextInput, ImageBackground, ScrollView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStaticNavigation, useNavigation } from '@react-navigation/native';
+import { createStaticNavigation, useNavigation, useIsFocused } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Dashboard from './components/Dashboard';
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const initializeDB = async (db) => {
   try {
@@ -47,7 +48,20 @@ export function UserForm() {
   const [visibleLunch, setVisibleLunch] = useState(false);
   const [visibleDinner, setVisibleDinner] = useState(false);
   const [usersExist, setUsersExist] = useState(true);
+  const isFocused = useIsFocused();
+  const image = require("./assets/background.jpg");
 
+  async function fetchUsers() {
+    const result = await db.getAllAsync("SELECT * FROM userData");
+    setUsers(result)
+    console.log("result =", result);
+  }
+
+  useEffect(() => {
+    if (isFocused) {
+      fetchUsers();
+    }
+  }, [isFocused]);
 
   const toggleWeightUnit = () => {
     setWeightUnit((prevState) => !prevState);
@@ -125,7 +139,7 @@ export function UserForm() {
     let lunchTime = getFormattedTime(lunch);
     let dinnerTime = getFormattedTime(dinner);
 
-    await db.runAsync("INSERT INTO userData (name, age, weight, height, breakfast, lunch, dinner) values (?, ?, ?, ?, ?, ?, ?)", [
+    const res = await db.runAsync("INSERT INTO userData (name, age, weight, height, breakfast, lunch, dinner) values (?, ?, ?, ?, ?, ?, ?)", [
       name,
       age,
       weightResult,
@@ -133,27 +147,37 @@ export function UserForm() {
       breakfastTime,
       lunchTime,
       dinnerTime,
-    ]).then(() => {
-      let currentUser = [...users];
-      currentUser.push({ id: resultSet.insertId, name: name });
-      setUsers(currentUser);
-      setName("");
-      setAge("");
-      setHeight("");
-      setFeet("");
-      setInch("");
-      setWeight("");
-      setModalVisible(false);
-      Alert.alert("New User Added");
-    })
+    ])
+    console.log(res)
+    setName("");
+    setAge("");
+    setHeight("");
+    setFeet("");
+    setInch("");
+    setWeight("");
+    setModalVisible(false);
+    Alert.alert("New User Added");
+    fetchUsers();
   }
 
+  const deleteUser = async () => {
+    try {
+      await db.runAsync("DELETE FROM userData WHERE id = 6")
+      Alert.alert("Deleted")
+      fetchUsers()
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.navigate("Dashboard")}><Text>Dashboard</Text></TouchableOpacity>
       <StatusBar translucent={true} />
-
+       <ImageBackground
+        source={image}
+        resizeMode="cover"
+        style={styles.background}
+      >
       <View style={styles.content}>
         {users.length === 0 ? (
           <Text style={styles.userExistText}>
@@ -168,16 +192,17 @@ export function UserForm() {
                 }
               >
                 <Text style={styles.itemText}>{item.name}</Text>
+                <TouchableOpacity onPress={() => navigation.navigate("Dashboard")}><Text>Dashboard</Text></TouchableOpacity>
               </TouchableOpacity>
             </View>
           ))
         )}
 
         <TouchableOpacity
-          onPress={() => setModalVisible(true)}
-          style={styles.addButtonContainer}
+          onPress={()=>setModalVisible(true)}
+          style={styles.itemContainer}
         >
-          <Text style={styles.addButtonText}>Add New User</Text>
+          <Text style={styles.itemTextNew}>Add New User</Text>
         </TouchableOpacity>
       </View>
       <Modal
@@ -442,6 +467,7 @@ export function UserForm() {
           </ScrollView>
         </View>
       </Modal>
+      </ImageBackground>
     </View>
   );
 }
@@ -468,9 +494,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   background: {
     flex: 1,
@@ -494,7 +517,25 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     textAlign: "center",
     backgroundColor: "white",
-    fontSize: 30,
+    fontSize: 20,
+    fontWeight: "500",
+    shadowColor: "black",
+    shadowOffset: {
+      width: 25,
+      height: 25,
+    },
+    shadowOpacity: 0.85,
+    shadowRadius: 25,
+    elevation: 55,
+  },
+  itemTextNew: {
+    backgroundColor: "#800000",
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderRadius: 15,
+    textAlign: "center",
+    color: "white",
+    fontSize: 20,
     fontWeight: "500",
     shadowColor: "black",
     shadowOffset: {

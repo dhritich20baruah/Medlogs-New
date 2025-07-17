@@ -54,7 +54,6 @@ export function UserForm() {
   async function fetchUsers() {
     const result = await db.getAllAsync("SELECT * FROM userData");
     setUsers(result)
-    console.log("result =", result);
   }
 
   useEffect(() => {
@@ -173,300 +172,299 @@ export function UserForm() {
   return (
     <View style={styles.container}>
       <StatusBar translucent={true} />
-       <ImageBackground
+      <ImageBackground
         source={image}
         resizeMode="cover"
         style={styles.background}
       >
-      <View style={styles.content}>
-        {users.length === 0 ? (
-          <Text style={styles.userExistText}>
-            Press on the button below to add user.
-          </Text>
-        ) : (
-          users.map((item) => (
-            <View key={item.id} style={styles.itemContainer}>
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("Menu", { userID: item.id })
-                }
-              >
-                <Text style={styles.itemText}>{item.name}</Text>
-                <TouchableOpacity onPress={() => navigation.navigate("Dashboard")}><Text>Dashboard</Text></TouchableOpacity>
-              </TouchableOpacity>
-            </View>
-          ))
-        )}
+        <View style={styles.content}>
+          {users.length === 0 ? (
+            <Text style={styles.userExistText}>
+              Press on the button below to add user.
+            </Text>
+          ) : (
+            users.map((item) => (
+              <View key={item.id} style={styles.itemContainer}>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("Menu", { userID: item.id })
+                  }
+                >
+                  <Text style={styles.itemText}>{item.name}</Text>
+                </TouchableOpacity>
+              </View>
+            ))
+          )}
 
-        <TouchableOpacity
-          onPress={()=>setModalVisible(true)}
-          style={styles.itemContainer}
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            style={styles.itemContainer}
+          >
+            <Text style={styles.itemTextNew}>Add New User</Text>
+          </TouchableOpacity>
+        </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
         >
-          <Text style={styles.itemTextNew}>Add New User</Text>
-        </TouchableOpacity>
-      </View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalView}>
-          <ScrollView>
-            <View style={{ flex: 1, padding: 20 }}>
-              <Text
-                style={{
-                  textAlign: "center",
-                  color: "#800000",
-                  fontSize: 15,
-                }}
-              >
-                ADD NEW USER
-              </Text>
-              <TextInput
-                placeholder="Name"
-                value={name}
-                onChangeText={setName}
-                style={{
-                  marginBottom: 10,
-                  padding: 10,
-                  borderWidth: 1,
-                  borderColor: "#800000",
-                  borderRadius: 10,
-                }}
-              />
-              <TextInput
-                placeholder="Age"
-                value={age}
-                onChangeText={setAge}
-                keyboardType="numeric"
-                style={{
-                  marginBottom: 10,
-                  padding: 10,
-                  borderWidth: 1,
-                  borderColor: "#800000",
-                  borderRadius: 10,
-                }}
-              />
-              <Text style={{ marginBottom: 5 }}>
-                Weight ({weightUnit ? "lb" : "kg"})
-              </Text>
-              <TextInput
-                placeholder={`Weight (${weightUnit ? "lb." : "kg."})`}
-                value={weight}
-                onChangeText={setWeight}
-                keyboardType="numeric"
-                style={{
-                  marginBottom: 10,
-                  padding: 10,
-                  borderWidth: 1,
-                  borderColor: "#800000",
-                  borderRadius: 10,
-                }}
-              />
-              <View style={{ flexDirection: "row", marginBottom: 10 }}>
-                <TouchableOpacity
-                  onPress={toggleWeightUnit}
-                  style={{
-                    marginRight: 10,
-                    padding: 10,
-                    backgroundColor: weightUnit ? "lightgray" : "orange",
-                    borderRadius: 5,
-                  }}
-                >
-                  <Text style={{ color: weightUnit ? "black" : "white" }}>
-                    Kg
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={toggleWeightUnit}
-                  style={{
-                    padding: 10,
-                    backgroundColor: weightUnit ? "orange" : "lightgray",
-                    borderRadius: 5,
-                  }}
-                >
-                  <Text style={{ color: weightUnit ? "white" : "black" }}>
-                    lb.
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={{ marginBottom: 10 }}>
-                <Text style={{ marginBottom: 5 }}>
-                  Height ({heightUnit ? "ft-in" : "cm"})
-                </Text>
-                {heightUnit ? (
-                  <View style={{ flexDirection: "row" }}>
-                    <TextInput
-                      placeholder="Feet"
-                      value={feet}
-                      onChangeText={setFeet}
-                      keyboardType="numeric"
-                      style={{
-                        marginRight: 10,
-                        flex: 1,
-                        padding: 10,
-                        borderWidth: 1,
-                        borderColor: "#800000",
-                        borderRadius: 10,
-                      }}
-                    />
-                    <TextInput
-                      placeholder="Inches"
-                      value={inch}
-                      onChangeText={setInch}
-                      keyboardType="numeric"
-                      style={{
-                        flex: 1,
-                        padding: 10,
-                        borderWidth: 1,
-                        borderColor: "#800000",
-                        borderRadius: 10,
-                      }}
-                    />
-                  </View>
-                ) : (
-                  <TextInput
-                    placeholder="Height(cm)"
-                    value={height}
-                    onChangeText={setHeight}
-                    keyboardType="numeric"
-                    style={{
-                      padding: 10,
-                      borderWidth: 1,
-                      borderColor: "#800000",
-                      borderRadius: 10,
-                    }}
-                  />
-                )}
-              </View>
-              <View style={{ flexDirection: "row", marginBottom: 10 }}>
-                <TouchableOpacity
-                  onPress={toggleHeightUnit}
-                  style={{
-                    marginRight: 10,
-                    padding: 10,
-                    backgroundColor: heightUnit ? "lightgray" : "orange",
-                    borderRadius: 5,
-                  }}
-                >
-                  <Text style={{ color: heightUnit ? "black" : "white" }}>
-                    cm
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={toggleHeightUnit}
-                  style={{
-                    padding: 10,
-                    backgroundColor: heightUnit ? "orange" : "lightgray",
-                    borderRadius: 5,
-                  }}
-                >
-                  <Text style={{ color: heightUnit ? "white" : "black" }}>
-                    ft-in
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.container}>
-                <Text style={styles.title}>
-                  Please enter your approximate times for having breakfast,
-                  lunch, and dinner for the medicine tracker.
-                </Text>
-
-                {/* Breakfast */}
-                <TouchableOpacity
-                  onPress={() => setVisibleBreakfast(!visibleBreakfast)}
-                  style={styles.input}
-                >
-                  <Text style={styles.inputText}>Set Breakfast Time</Text>
-                  <Text style={styles.inputTime}>
-                    {getFormattedTime(breakfast)}
-                  </Text>
-                </TouchableOpacity>
-                {visibleBreakfast && (
-                  <DateTimePicker
-                    value={breakfast}
-                    mode={"time"}
-                    is24Hour={true}
-                    display="default"
-                    onChange={onChangeBreakfast}
-                  />
-                )}
-
-                {/* Lunch */}
-                <TouchableOpacity
-                  onPress={() => setVisibleLunch(!visibleLunch)}
-                  style={styles.input}
-                >
-                  <Text style={styles.inputText}>Set Lunch Time</Text>
-                  <Text style={styles.inputTime}>
-                    {getFormattedTime(lunch)}
-                  </Text>
-                </TouchableOpacity>
-                {visibleLunch && (
-                  <DateTimePicker
-                    value={lunch}
-                    mode={"time"}
-                    is24Hour={true}
-                    display="default"
-                    onChange={onChangeLunch}
-                  />
-                )}
-
-                {/* Dinner */}
-                <TouchableOpacity
-                  onPress={() => setVisibleDinner(!visibleDinner)}
-                  style={styles.input}
-                >
-                  <Text style={styles.inputText}>Set Dinner Time</Text>
-                  <Text style={styles.inputTime}>
-                    {getFormattedTime(dinner)}
-                  </Text>
-                </TouchableOpacity>
-                {visibleDinner && (
-                  <DateTimePicker
-                    value={dinner}
-                    mode={"time"}
-                    is24Hour={true}
-                    display="default"
-                    onChange={onChangeDinner}
-                  />
-                )}
-              </View>
-              <TouchableOpacity
-                onPress={handleSubmit}
-                style={{
-                  backgroundColor: "orange",
-                  padding: 10,
-                  borderRadius: 5,
-                }}
-              >
+          <View style={styles.modalView}>
+            <ScrollView>
+              <View style={{ flex: 1, padding: 20 }}>
                 <Text
                   style={{
-                    color: "white",
                     textAlign: "center",
+                    color: "#800000",
                     fontSize: 15,
-                    fontWeight: "800",
                   }}
                 >
-                  SUBMIT
+                  ADD NEW USER
                 </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
-                style={{
-                  backgroundColor: "red",
-                  padding: 10,
-                  borderRadius: 5,
-                  marginTop: 5,
-                }}
-              >
-                <Text style={styles.cancelText}>CANCEL</Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </View>
-      </Modal>
+                <TextInput
+                  placeholder="Name"
+                  value={name}
+                  onChangeText={setName}
+                  style={{
+                    marginBottom: 10,
+                    padding: 10,
+                    borderWidth: 1,
+                    borderColor: "#800000",
+                    borderRadius: 10,
+                  }}
+                />
+                <TextInput
+                  placeholder="Age"
+                  value={age}
+                  onChangeText={setAge}
+                  keyboardType="numeric"
+                  style={{
+                    marginBottom: 10,
+                    padding: 10,
+                    borderWidth: 1,
+                    borderColor: "#800000",
+                    borderRadius: 10,
+                  }}
+                />
+                <Text style={{ marginBottom: 5 }}>
+                  Weight ({weightUnit ? "lb" : "kg"})
+                </Text>
+                <TextInput
+                  placeholder={`Weight (${weightUnit ? "lb." : "kg."})`}
+                  value={weight}
+                  onChangeText={setWeight}
+                  keyboardType="numeric"
+                  style={{
+                    marginBottom: 10,
+                    padding: 10,
+                    borderWidth: 1,
+                    borderColor: "#800000",
+                    borderRadius: 10,
+                  }}
+                />
+                <View style={{ flexDirection: "row", marginBottom: 10 }}>
+                  <TouchableOpacity
+                    onPress={toggleWeightUnit}
+                    style={{
+                      marginRight: 10,
+                      padding: 10,
+                      backgroundColor: weightUnit ? "lightgray" : "orange",
+                      borderRadius: 5,
+                    }}
+                  >
+                    <Text style={{ color: weightUnit ? "black" : "white" }}>
+                      Kg
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={toggleWeightUnit}
+                    style={{
+                      padding: 10,
+                      backgroundColor: weightUnit ? "orange" : "lightgray",
+                      borderRadius: 5,
+                    }}
+                  >
+                    <Text style={{ color: weightUnit ? "white" : "black" }}>
+                      lb.
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={{ marginBottom: 10 }}>
+                  <Text style={{ marginBottom: 5 }}>
+                    Height ({heightUnit ? "ft-in" : "cm"})
+                  </Text>
+                  {heightUnit ? (
+                    <View style={{ flexDirection: "row" }}>
+                      <TextInput
+                        placeholder="Feet"
+                        value={feet}
+                        onChangeText={setFeet}
+                        keyboardType="numeric"
+                        style={{
+                          marginRight: 10,
+                          flex: 1,
+                          padding: 10,
+                          borderWidth: 1,
+                          borderColor: "#800000",
+                          borderRadius: 10,
+                        }}
+                      />
+                      <TextInput
+                        placeholder="Inches"
+                        value={inch}
+                        onChangeText={setInch}
+                        keyboardType="numeric"
+                        style={{
+                          flex: 1,
+                          padding: 10,
+                          borderWidth: 1,
+                          borderColor: "#800000",
+                          borderRadius: 10,
+                        }}
+                      />
+                    </View>
+                  ) : (
+                    <TextInput
+                      placeholder="Height(cm)"
+                      value={height}
+                      onChangeText={setHeight}
+                      keyboardType="numeric"
+                      style={{
+                        padding: 10,
+                        borderWidth: 1,
+                        borderColor: "#800000",
+                        borderRadius: 10,
+                      }}
+                    />
+                  )}
+                </View>
+                <View style={{ flexDirection: "row", marginBottom: 10 }}>
+                  <TouchableOpacity
+                    onPress={toggleHeightUnit}
+                    style={{
+                      marginRight: 10,
+                      padding: 10,
+                      backgroundColor: heightUnit ? "lightgray" : "orange",
+                      borderRadius: 5,
+                    }}
+                  >
+                    <Text style={{ color: heightUnit ? "black" : "white" }}>
+                      cm
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={toggleHeightUnit}
+                    style={{
+                      padding: 10,
+                      backgroundColor: heightUnit ? "orange" : "lightgray",
+                      borderRadius: 5,
+                    }}
+                  >
+                    <Text style={{ color: heightUnit ? "white" : "black" }}>
+                      ft-in
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.container}>
+                  <Text style={styles.title}>
+                    Please enter your approximate times for having breakfast,
+                    lunch, and dinner for the medicine tracker.
+                  </Text>
+
+                  {/* Breakfast */}
+                  <TouchableOpacity
+                    onPress={() => setVisibleBreakfast(!visibleBreakfast)}
+                    style={styles.input}
+                  >
+                    <Text style={styles.inputText}>Set Breakfast Time</Text>
+                    <Text style={styles.inputTime}>
+                      {getFormattedTime(breakfast)}
+                    </Text>
+                  </TouchableOpacity>
+                  {visibleBreakfast && (
+                    <DateTimePicker
+                      value={breakfast}
+                      mode={"time"}
+                      is24Hour={true}
+                      display="default"
+                      onChange={onChangeBreakfast}
+                    />
+                  )}
+
+                  {/* Lunch */}
+                  <TouchableOpacity
+                    onPress={() => setVisibleLunch(!visibleLunch)}
+                    style={styles.input}
+                  >
+                    <Text style={styles.inputText}>Set Lunch Time</Text>
+                    <Text style={styles.inputTime}>
+                      {getFormattedTime(lunch)}
+                    </Text>
+                  </TouchableOpacity>
+                  {visibleLunch && (
+                    <DateTimePicker
+                      value={lunch}
+                      mode={"time"}
+                      is24Hour={true}
+                      display="default"
+                      onChange={onChangeLunch}
+                    />
+                  )}
+
+                  {/* Dinner */}
+                  <TouchableOpacity
+                    onPress={() => setVisibleDinner(!visibleDinner)}
+                    style={styles.input}
+                  >
+                    <Text style={styles.inputText}>Set Dinner Time</Text>
+                    <Text style={styles.inputTime}>
+                      {getFormattedTime(dinner)}
+                    </Text>
+                  </TouchableOpacity>
+                  {visibleDinner && (
+                    <DateTimePicker
+                      value={dinner}
+                      mode={"time"}
+                      is24Hour={true}
+                      display="default"
+                      onChange={onChangeDinner}
+                    />
+                  )}
+                </View>
+                <TouchableOpacity
+                  onPress={handleSubmit}
+                  style={{
+                    backgroundColor: "orange",
+                    padding: 10,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "white",
+                      textAlign: "center",
+                      fontSize: 15,
+                      fontWeight: "800",
+                    }}
+                  >
+                    SUBMIT
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setModalVisible(false)}
+                  style={{
+                    backgroundColor: "red",
+                    padding: 10,
+                    borderRadius: 5,
+                    marginTop: 5,
+                  }}
+                >
+                  <Text style={styles.cancelText}>CANCEL</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </View>
+        </Modal>
       </ImageBackground>
     </View>
   );
@@ -477,8 +475,25 @@ const Stack = createNativeStackNavigator()
 function RootStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="Dashboard" component={Dashboard} options={{ title: 'Dashboard' }} />
+      <Stack.Screen name="Home" component={HomeScreen} options={() => ({
+        title: "Med Logger",
+        headerStyle: {
+          backgroundColor: "#800000",
+        },
+        headerTintColor: "#fff",
+        headerTitleStyle: {
+          fontWeight: "bold",
+        },
+      })} />
+      <Stack.Screen name="Menu" component={Dashboard} options={{
+        headerStyle: {
+          backgroundColor: "#800000",
+        },
+        headerTintColor: "#fff",
+        headerTitleStyle: {
+          fontWeight: "bold",
+        },
+      }} />
     </Stack.Navigator>
   );
 }

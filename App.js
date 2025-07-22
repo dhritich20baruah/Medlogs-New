@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStaticNavigation, useNavigation, useIsFocused } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Dashboard from './components/Dashboard';
+import Pills from './components/PillTracker/Pills';
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -486,6 +487,15 @@ function RootStack() {
         },
       })} />
       <Stack.Screen name="Menu" component={Dashboard} options={{
+        headerStyle: {
+          backgroundColor: "#800000",
+        },
+        headerTintColor: "#fff",
+        headerTitleStyle: {
+          fontWeight: "bold",
+        },
+      }} />
+      <Stack.Screen name="Pills" component={Pills} options={{
         headerStyle: {
           backgroundColor: "#800000",
         },

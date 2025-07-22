@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
     Text,
     View,
@@ -12,17 +12,18 @@ import FontAwesome from "@expo/vector-icons/FontAwesome6";
 import { useNavigation } from "@react-navigation/native";
 import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
 
-const Dashboard = ({ navigation, route }) => {
+const Dashboard = ({ route }) => {
     const { userID } = route.params;
     return (
         <SQLiteProvider databaseName="Medlogs.db">
             <Menu userID={userID} />
         </SQLiteProvider>
     )
-
 }
 
 export function Menu(userID) {
+    const db = useSQLiteContext();
+    const navigation = useNavigation()
     const id = userID.userID;
     const [users, setUsers] = useState([
         {
@@ -38,7 +39,7 @@ export function Menu(userID) {
 
     useEffect(() => {
         fetchUsers()
-    }, [id])
+    }, [])
 
     async function fetchUsers() {
         const result = await db.getAllAsync("SELECT * FROM userData WHERE id = ?", [id]);
@@ -57,9 +58,12 @@ export function Menu(userID) {
                         paddingVertical: 10,
                     }}
                 >
-                    Hello User
+                    Hello {users[0].name}
                 </Text>
                 <TouchableOpacity
+                    onPress={() => navigation.navigate("Pills", {
+                        userID
+                    })}
                     style={{
                         display: "flex",
                         flexDirection: "row",
@@ -81,7 +85,6 @@ export function Menu(userID) {
                     <FontAwesome name="circle-arrow-right" size={20} color="#800000" />
                 </TouchableOpacity>
                 <TouchableOpacity
-                  
                     style={{
                         display: "flex",
                         flexDirection: "row",

@@ -13,9 +13,17 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCalendarsUsageDescription": "Allow $(PRODUCT_NAME) to access your calendar to add medical reminders.",
+        "NSRemindersUsageDescription": "Allow $(PRODUCT_NAME) to access your reminders to add medication alerts."
+      }
     },
     "android": {
+       "permissions": [
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -26,7 +34,12 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-calendar",
+        {
+          "calendarUsageDescription": "Allow $(PRODUCT_NAME) to access your calendar to add medical reminders.",
+          "remindersUsageDescription": "Allow $(PRODUCT_NAME) to access your reminders to add medication alerts."
+        }
     ]
   }
 }

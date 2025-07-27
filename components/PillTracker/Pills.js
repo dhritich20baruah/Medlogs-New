@@ -8,51 +8,51 @@ import FontAwesome from "@expo/vector-icons/FontAwesome6";
 import { useNavigation } from "@react-navigation/native";
 
 export default function Pills({ route }) {
-    const { userID } = route.params;
-    return (
-        <SQLiteProvider databaseName="Medlogs.db">
-            <Medicine userID={userID} />
-        </SQLiteProvider>
-    )
+  const { users } = route.params;
+  return (
+    <SQLiteProvider databaseName="Medlogs.db">
+      <Medicine users={users} />
+    </SQLiteProvider>
+  )
 }
 
-export function Medicine(userID) {
-    const db = useSQLiteContext();
-    const navigation = useNavigation()
-    const id = userID.userID;
-    const [hasCalendarPermission, setHasCalendarPermission] = useState(false);
+export function Medicine(users) {
+  const db = useSQLiteContext();
+  const navigation = useNavigation()
+  const userInfo = users.users;
+  const [hasCalendarPermission, setHasCalendarPermission] = useState(false);
 
-    useEffect(() => {
-        (async () => {
-            const {status} = await Calendar.requestCalendarPermissionsAsync();
-            if (status === 'granted'){
-                setHasCalendarPermission(true);
-            } else {
-                Alert.alert('Permission Denied', 'Calendar permission is required to add events.')
-            }
-        })();
-    }, []);
+  useEffect(() => {
+    (async () => {
+      const { status } = await Calendar.requestCalendarPermissionsAsync();
+      if (status === 'granted') {
+        setHasCalendarPermission(true);
+      } else {
+        Alert.alert('Permission Denied', 'Calendar permission is required to add events.')
+      }
+    })();
+  }, []);
 
-    async function getDefaultCalendarSource(){
-        const defaultCalendar = await Calendar.getDefaultCalendarAsync();
-        return defaultCalendar.source;
+  async function getDefaultCalendarSource() {
+    const defaultCalendar = await Calendar.getDefaultCalendarAsync();
+    return defaultCalendar.source;
+  }
+
+  async function createMedicationCalendar() {
+    if (!hasCalendarPermission) {
+      Alert.alert('Permission Error', 'Cannot create calendar without permission.');
+      return;
     }
 
-    async function createMedicationCalendar(){
-        if(!hasCalendarPermission){
-            Alert.alert('Permission Error', 'Cannot create calendar without permission.');
-      return; 
-        }
-
-        try{
-            const calendars = await Calendar.getCalendarAsync(Calendar.EntityTypes.EVENT);
-             let medicationCalendar = calendars.find(
+    try {
+      const calendars = await Calendar.getCalendarAsync(Calendar.EntityTypes.EVENT);
+      let medicationCalendar = calendars.find(
         (cal) => cal.title === 'Medlogs Reminders' && cal.accessLevel === Calendar.CalendarAccessLevel.OWNER
       );
 
       let newCalendarID;
 
-      if(!medicationCalendar){
+      if (!medicationCalendar) {
         const defaultCalendarSource = Platform.OS === 'ios'
           ? await getDefaultCalendarSource()
           : { isLocalAccount: true, name: 'Medlogs Reminders' };
@@ -73,14 +73,14 @@ export function Medicine(userID) {
         console.log(`Using existing calendar with ID: ${newCalendarID}`);
       }
       return newCalendarID;
-        } catch (e) {
+    } catch (e) {
       console.error("Failed to create/get calendar:", e);
       Alert.alert("Error", "Could not create or find calendar.");
       return null;
     }
-    }
+  }
 
-      async function addMedicationEvent(calendarId, medicationName, dosage, date, time) {
+  async function addMedicationEvent(calendarId, medicationName, dosage, date, time) {
     if (!hasCalendarPermission || !calendarId) {
       Alert.alert('Error', 'Missing calendar permission or ID.');
       return;
@@ -110,8 +110,8 @@ export function Medicine(userID) {
     }
   }
 
-   return (
-   <View style={styles.container}>
+  return (
+    <View style={styles.container}>
       <Text style={styles.header}>Expo Calendar Integration</Text>
       {hasCalendarPermission ? (
         <>
@@ -131,12 +131,18 @@ export function Medicine(userID) {
       ) : (
         <Text style={styles.statusText}>Waiting for calendar permission...</Text>
       )}
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Add Medicine", { users })}
+        style={styles.floatBtn}
+      >
+        <Text style={styles.btnText}>Add Medicine +</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-   container: {
+  container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -150,5 +156,21 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 16,
     marginBottom: 10,
+  },
+    floatBtn: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#800000",
+    position: "absolute",
+    borderRadius: 10,
+    top: "80%",
+    right: 30,
+    padding: 3,
+  },
+  btnText: {
+    color: "white",
+    fontSize: 18,
+    padding: 3,
   },
 });

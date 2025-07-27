@@ -62,7 +62,7 @@ export function Menu(userID) {
                 </Text>
                 <TouchableOpacity
                     onPress={() => navigation.navigate("Pills", {
-                        userID
+                        users
                     })}
                     style={{
                         display: "flex",

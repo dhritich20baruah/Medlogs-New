@@ -5,6 +5,7 @@ import { createStaticNavigation, useNavigation, useIsFocused } from '@react-navi
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Dashboard from './components/Dashboard';
 import Pills from './components/PillTracker/Pills';
+import AddMedicine from './components/PillTracker/AddMedicine';
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -13,7 +14,8 @@ const initializeDB = async (db) => {
   try {
     await db.execAsync(`
         PRAGMA journal_mode = WAL;
-        CREATE TABLE IF NOT EXISTS userData (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, age INTEGER, weight REAL, height REAL, breakfast TEXT, lunch TEXT, dinner TEXT);     
+        CREATE TABLE IF NOT EXISTS userData (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, age INTEGER, weight REAL, height REAL, breakfast TEXT, lunch TEXT, dinner TEXT);   
+        CREATE TABLE IF NOT EXISTS medicine_list (id INTEGER PRIMARY KEY AUTOINCREMENT, medicineName TEXT, startDate TEXT, endDate TEXT, sunday INTEGER, monday INTEGER, tuesday INTEGER, wednesday INTEGER, thursday INTEGER, friday INTEGER, saturday INTEGER, BeforeBreakfast TEXT, AfterBreakfast TEXT, BeforeLunch TEXT, AfterLunch TEXT, BeforeDinner TEXT, AfterDinner TEXT, user_id INTEGER);  
         `);
     console.log("DB connected");
   } catch (error) {
@@ -496,6 +498,15 @@ function RootStack() {
         },
       }} />
       <Stack.Screen name="Pills" component={Pills} options={{
+        headerStyle: {
+          backgroundColor: "#800000",
+        },
+        headerTintColor: "#fff",
+        headerTitleStyle: {
+          fontWeight: "bold",
+        },
+      }} />
+      <Stack.Screen name="Add Medicine" component={AddMedicine} options={{
         headerStyle: {
           backgroundColor: "#800000",
         },

@@ -34,12 +34,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-sqlite",
-      "expo-calendar",
-        {
-          "calendarUsageDescription": "Allow $(PRODUCT_NAME) to access your calendar to add medical reminders.",
-          "remindersUsageDescription": "Allow $(PRODUCT_NAME) to access your reminders to add medication alerts."
-        }
+      "expo-sqlite"
     ]
   }
 }

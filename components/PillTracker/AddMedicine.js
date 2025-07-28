@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import {
     Text,
     View,
@@ -7,7 +7,6 @@ import {
     Alert,
     ScrollView,
     StyleSheet,
-    Button,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -19,7 +18,7 @@ const AddMedicine = ({ route }) => {
     const { users } = route.params
     return (
         <SQLiteProvider databaseName="Medlogs.db">
-            <MedicationScheduleForm users={users}/>
+            <MedicationScheduleForm users={users} />
         </SQLiteProvider>
     )
 }
@@ -27,8 +26,8 @@ const AddMedicine = ({ route }) => {
 export function MedicationScheduleForm(users) {
     const db = useSQLiteContext();
     const navigation = useNavigation()
-    const userInfo = users.users;
-    console.log(userInfo.users[0].age)
+    const userInfo = users.users.users[0];
+    // console.log(userInfo.breakfast)
     const [medicineName, setMedicineName] = useState("");
 
     let dateString = new Date().toISOString();
@@ -161,8 +160,37 @@ export function MedicationScheduleForm(users) {
         return true;
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        if (validateForm()) {
+            const calculatedEndDate = calculateEndDate(
+                date,
+                `${selectedValue} ${durationUnit}`
+            );
+            setEndDate(calculatedEndDate);
 
+            const response = await db.runAsync(`INSERT INTO medicine_list (medicineName, startDate, endDate, sunday, monday, tuesday, wednesday, thursday, friday, saturday, BeforeBreakfast, AfterBreakfast, BeforeLunch, AfterLunch, BeforeDinner, AfterDinner, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [
+                    medicineName,
+                    startDate,
+                    calculatedEndDate,
+                    days.sunday ? 1 : 0,
+                    days.monday ? 1 : 0,
+                    days.tuesday ? 1 : 0,
+                    days.wednesday ? 1 : 0,
+                    days.thursday ? 1 : 0,
+                    days.friday ? 1 : 0,
+                    days.saturday ? 1 : 0,
+                    timing.BeforeBreakfast ? subtractMinutes(userInfo.breakfast) : "",
+                    timing.AfterBreakfast ? userInfo.breakfast : "",
+                    timing.BeforeLunch ? subtractMinutes(userInfo.lunch) : "",
+                    timing.AfterLunch ? userInfo.lunch : "",
+                    timing.BeforeDinner ? subtractMinutes(userInfo.dinner) : "",
+                    timing.AfterDinner ? userInfo.dinner : "",
+                    userInfo.id,
+                ]);
+            Alert.alert("Medicine Added");
+            navigation.goBack()
+        }
     }
 
     return (
@@ -482,6 +510,7 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         backgroundColor: "#800000",
         elevation: 25,
+        marginBottom: 50
     },
     saveBtn: {
         color: "white",

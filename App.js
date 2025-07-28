@@ -150,7 +150,6 @@ export function UserForm() {
       lunchTime,
       dinnerTime,
     ])
-    console.log(res)
     setName("");
     setAge("");
     setHeight("");

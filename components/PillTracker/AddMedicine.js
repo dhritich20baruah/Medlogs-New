@@ -188,6 +188,7 @@ export function MedicationScheduleForm(users) {
                     timing.AfterDinner ? userInfo.dinner : "",
                     userInfo.id,
                 ]);
+            console.log(response)
             Alert.alert("Medicine Added");
             navigation.goBack()
         }

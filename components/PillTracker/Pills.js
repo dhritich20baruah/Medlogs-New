@@ -21,6 +21,8 @@ export function Medicine(users) {
   const navigation = useNavigation()
   const userInfo = users.users;
   const [hasCalendarPermission, setHasCalendarPermission] = useState(false);
+  const userID = userInfo[0].id;
+  const [medicationList, setMedicationList] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -31,6 +33,7 @@ export function Medicine(users) {
         Alert.alert('Permission Denied', 'Calendar permission is required to add events.')
       }
     })();
+    fetchMeds();
   }, []);
 
   async function getDefaultCalendarSource() {
@@ -110,10 +113,15 @@ export function Medicine(users) {
     }
   }
 
+  const fetchMeds = async () => {
+    const response = await db.getAllAsync(`select * from medicine_list where user_id = ?`, [userID])
+    setMedicationList(response)
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Expo Calendar Integration</Text>
-      {hasCalendarPermission ? (
+      <Text style={styles.header}>Your Medication Schedule</Text>
+      {/* {hasCalendarPermission ? (
         <>
           <Text style={styles.statusText}>Calendar permission granted!</Text>
           <Button
@@ -130,7 +138,19 @@ export function Medicine(users) {
         </>
       ) : (
         <Text style={styles.statusText}>Waiting for calendar permission...</Text>
-      )}
+      )} */}
+      <View >
+        {medicationList.map((item, index) => {
+          return (
+            <View key={index} style={styles.tiles}>
+              <Text>{item.medicineName}</Text>
+              <Text>{item.startDate}</Text>
+              <Text>{item.endDate}</Text>
+              <Text>Timings: {item.BeforeBreakfast} {item.AfterBreakfast} {item.BeforeLunch} {item.AfterLunch} {item.BeforeDinner} {item.AfterDinner}</Text>
+            </View>
+          )
+        })}
+      </View>
       <TouchableOpacity
         onPress={() => navigation.navigate("Add Medicine", { users })}
         style={styles.floatBtn}
@@ -144,9 +164,23 @@ export function Medicine(users) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: 20,
+    backgroundColor: "#fff4f4ff" 
+  },
+  tiles: {
+    margin: 5,
+    padding: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#800000",
+    shadowColor: "red",
+    shadowOffset: {
+      width: 25,
+      height: 25,
+    },
+    shadowOpacity: 0.85,
+    shadowRadius: 25,
+    backgroundColor: "white"
   },
   header: {
     fontSize: 22,
@@ -157,7 +191,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
   },
-    floatBtn: {
+  floatBtn: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",

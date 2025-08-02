@@ -118,6 +118,16 @@ export function Medicine(users) {
     setMedicationList(response)
   }
 
+  const calculateDuration = (startDate, endDate) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    const duration = end - start;
+    const durationDays = Math.ceil(duration / (1000 * 60 * 60 * 24));
+
+    return durationDays
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Your Medication Schedule</Text>
@@ -143,10 +153,11 @@ export function Medicine(users) {
         {medicationList.map((item, index) => {
           return (
             <View key={index} style={styles.tiles}>
-              <Text>{item.medicineName}</Text>
-              <Text>{item.startDate}</Text>
-              <Text>{item.endDate}</Text>
-              <Text>Timings: {item.BeforeBreakfast} {item.AfterBreakfast} {item.BeforeLunch} {item.AfterLunch} {item.BeforeDinner} {item.AfterDinner}</Text>
+              <Text style={styles.textStyle1}>{item.medicineName}</Text>
+              <Text style={styles.textStyle2}>Started on: <Text style={styles.textStyle3}>{item.startDate.split("-").reverse().join("-")}</Text></Text>
+              <Text style={styles.textStyle2}>Duration:
+                <Text style={styles.textStyle3}>{calculateDuration(item.startDate, item.endDate)} Days</Text> </Text>
+              <Text style={styles.textStyle2}>Timings:  <Text style={styles.textStyle3}>{item.BeforeBreakfast?"Before Breakfast" : ""} {item.AfterBreakfast? "After Breakfast" : ""} {item.BeforeLunch ? "Before Lunch" : ""} {item.AfterLunch ? "After Lunch" : ""} {item.BeforeDinner ? "Before Dinner" : ""} {item.AfterDinner ? "After Dinner" : ""}</Text></Text>
             </View>
           )
         })}
@@ -165,7 +176,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff4f4ff" 
   },
   tiles: {
     margin: 5,
@@ -190,6 +200,15 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 16,
     marginBottom: 10,
+  },
+  textStyle1: {
+    color: "#800000", fontSize: 30, fontWeight: "bold"
+  },
+  textStyle2: {
+    fontWeight: "bold", fontSize: 15
+  },
+  textStyle3: {
+    color: "#800000", fontSize: 20
   },
   floatBtn: {
     flex: 1,

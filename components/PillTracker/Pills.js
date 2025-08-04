@@ -1,7 +1,6 @@
-import { useEffect, useState, useCallback, useRef } from "react";
-import { Text, StyleSheet, TouchableOpacity, SafeAreaView, View, Alert, Modal, ViewBase, Button } from "react-native";
+import { useEffect, useState } from "react";
+import { Text, StyleSheet, TouchableOpacity, SafeAreaView, View, Alert, Modal, Button } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import * as Notifications from "expo-notifications";
 import * as Calendar from 'expo-calendar';
 import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
 import FontAwesome from "@expo/vector-icons/FontAwesome6";
@@ -23,6 +22,7 @@ export function Medicine(users) {
   const [hasCalendarPermission, setHasCalendarPermission] = useState(false);
   const userID = userInfo[0].id;
   const [medicationList, setMedicationList] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -128,6 +128,20 @@ export function Medicine(users) {
     return durationDays
   }
 
+  const deleteMed = async () => {
+    try {
+      await db.runAsync("DELETE FROM userData WHERE id = 6")
+      Alert.alert("Deleted")
+      fetchUsers()
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const EditMedicine = () => {
+    setModalVisible(false)
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Your Medication Schedule</Text>
@@ -157,11 +171,44 @@ export function Medicine(users) {
               <Text style={styles.textStyle2}>Started on: <Text style={styles.textStyle3}>{item.startDate.split("-").reverse().join("-")}</Text></Text>
               <Text style={styles.textStyle2}>Duration:
                 <Text style={styles.textStyle3}>{calculateDuration(item.startDate, item.endDate)} Days</Text> </Text>
-              <Text style={styles.textStyle2}>Timings:  <Text style={styles.textStyle3}>{item.BeforeBreakfast?"Before Breakfast" : ""} {item.AfterBreakfast? "After Breakfast" : ""} {item.BeforeLunch ? "Before Lunch" : ""} {item.AfterLunch ? "After Lunch" : ""} {item.BeforeDinner ? "Before Dinner" : ""} {item.AfterDinner ? "After Dinner" : ""}</Text></Text>
+              <Text style={styles.textStyle2}>Timings: 
+                <View style={styles.timings}>
+                  <Text style={styles.textStyle3}>{item.BeforeBreakfast ? "Before Breakfast" : ""}</Text>
+                  <Text style={styles.textStyle3}>{item.AfterBreakfast ? "After Breakfast" : ""}</Text>
+                  <Text style={styles.textStyle3}>{item.BeforeLunch ? "Before Lunch" : ""}</Text>
+                  <Text style={styles.textStyle3}>{item.AfterLunch ? "After Lunch" : ""}</Text>
+                  <Text style={styles.textStyle3}>{item.BeforeDinner ? "Before Dinner" : ""}</Text>
+                  <Text style={styles.textStyle3}>{item.AfterDinner ? "After Dinner" : ""}</Text>
+                </View>
+              </Text>
+              <View style={styles.actions}>
+                <TouchableOpacity onPress={EditMedicine}>
+                  <FontAwesome name="pen-to-square" size={25} color="#800000" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                  <FontAwesome name="trash" size={25} color="#800000" />
+                </TouchableOpacity>
+              </View>
             </View>
           )
         })}
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(false);
+        }}
+      >
+        <View style={styles.modalView}>
+          <Text style={styles.modalTitle}>Are you sure you want to delete?</Text>
+          <View style={styles.modalBtns}>
+            <TouchableOpacity style={[styles.modalAction, { backgroundColor: "red" }]}><Text style={styles.modalActionText}>Yes</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => setModalVisible(false)} style={[styles.modalAction, { backgroundColor: "green" }]}><Text style={styles.modalActionText}>No</Text></TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <TouchableOpacity
         onPress={() => navigation.navigate("Add Medicine", { users })}
         style={styles.floatBtn}
@@ -176,54 +223,115 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: "#fff"
   },
   tiles: {
-    margin: 5,
-    padding: 10,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#800000",
-    shadowColor: "red",
-    shadowOffset: {
-      width: 25,
-      height: 25,
-    },
-    shadowOpacity: 0.85,
-    shadowRadius: 25,
-    backgroundColor: "white"
-  },
-  header: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginVertical: 10,
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 6, height: 5 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
   },
   statusText: {
     fontSize: 16,
     marginBottom: 10,
   },
   textStyle1: {
-    color: "#800000", fontSize: 30, fontWeight: "bold"
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#800000',
+    marginBottom: 8,
   },
   textStyle2: {
-    fontWeight: "bold", fontSize: 15
+    fontSize: 16,
+    marginBottom: 4,
+    color: '#333',
   },
   textStyle3: {
-    color: "#800000", fontSize: 20
+    fontWeight: 'bold',
+    color: '#444',
+  },
+  timings:{
+    display: "flex",
+    flexDirection: 'column'
   },
   floatBtn: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#800000",
-    position: "absolute",
-    borderRadius: 10,
-    top: "80%",
-    right: 30,
-    padding: 3,
+    backgroundColor: '#800000',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 25,
+    position: 'absolute',
+    bottom: 70,
+    right: 20,
+    elevation: 4,
   },
   btnText: {
-    color: "white",
-    fontSize: 18,
-    padding: 3,
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold'
   },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 10,
+    gap: 16,
+  },
+  saveBtnContainer: {
+    margin: 10,
+    padding: 10,
+    borderRadius: 50,
+    backgroundColor: "orange",
+  },
+  saveBtn: {
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "#fffeee",
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalBtns: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+  },
+  modalTitle: {
+    margin: 5,
+    textAlign: "center",
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#800000",
+  },
+  modalText: {
+    margin: 5,
+    textAlign: "center",
+    fontSize: 15,
+    color: "#800000",
+  },
+  modalAction: {
+    fontSize: 15,
+    padding: 10,
+    borderRadius: 25,
+    width: 75,
+  },
+  modalActionText: {
+    textAlign: "center",
+    fontWeight: "400",
+    color: "white"
+  }
 });

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Text, StyleSheet, TouchableOpacity, SafeAreaView, View, Alert, Modal, Button } from "react-native";
+import { Text, StyleSheet, TouchableOpacity, SafeAreaView, View, Alert, Modal, ScrollView } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Calendar from 'expo-calendar';
 import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
@@ -143,9 +143,19 @@ export function Medicine(users) {
     setModalVisible(false)
   }
 
+   const today = new Date();
+
+  const weekday = today.toLocaleDateString('en-US', { weekday: 'long' }); // e.g., Monday
+  const date = today.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Your Medication Schedule</Text>
+      <Text style={styles.header}>{date}</Text>
+      <Text style={styles.header2}>Your Medication Schedule for {weekday}</Text>
       {/* {hasCalendarPermission ? (
         <>
           <Text style={styles.statusText}>Calendar permission granted!</Text>
@@ -164,24 +174,27 @@ export function Medicine(users) {
       ) : (
         <Text style={styles.statusText}>Waiting for calendar permission...</Text>
       )} */}
-      <View >
+      <ScrollView style={styles.scrollArea} >
         {medicationList.map((item, index) => {
           return (
             <View key={index} style={styles.tiles}>
               <Text style={styles.textStyle1}>{item.medicineName}</Text>
               <Text style={styles.textStyle2}>Started on: <Text style={styles.textStyle3}>{item.startDate.split("-").reverse().join("-")}</Text></Text>
               <Text style={styles.textStyle2}>Duration:
-                <Text style={styles.textStyle3}>{calculateDuration(item.startDate, item.endDate)} Days</Text> </Text>
-              <Text style={styles.textStyle2}>Timings: 
-                <View style={styles.timings}>
-                  <Text style={styles.textStyle3}>{item.BeforeBreakfast ? "Before Breakfast" : ""}</Text>
-                  <Text style={styles.textStyle3}>{item.AfterBreakfast ? "After Breakfast" : ""}</Text>
-                  <Text style={styles.textStyle3}>{item.BeforeLunch ? "Before Lunch" : ""}</Text>
-                  <Text style={styles.textStyle3}>{item.AfterLunch ? "After Lunch" : ""}</Text>
-                  <Text style={styles.textStyle3}>{item.BeforeDinner ? "Before Dinner" : ""}</Text>
-                  <Text style={styles.textStyle3}>{item.AfterDinner ? "After Dinner" : ""}</Text>
+                <Text style={styles.textStyle3}> {calculateDuration(item.startDate, item.endDate)} Days</Text> </Text>
+              <View style={{display: "flex", flexDirection: "row"}}>
+                <View>
+                <Text style={styles.textStyle2}>Timings:</Text>
                 </View>
-              </Text>
+                <View style={styles.timings}>
+                  <Text style={[styles.textStyle3, item.BeforeBreakfast ? { display: "flex" } : { display: "none" }]}>{item.BeforeBreakfast ? "Before Breakfast" : ""}</Text>
+                  <Text style={[styles.textStyle3, item.AfterBreakfast ? { display: "flex" } : { display: "none" }]}>{item.AfterBreakfast ? "After Breakfast" : ""}</Text>
+                  <Text style={[styles.textStyle3, item.BeforeLunch ? { display: "flex" } : { display: "none" }]}>{item.BeforeLunch ? "Before Lunch" : ""}</Text>
+                  <Text style={[styles.textStyle3, item.AfterLunch ? { display: "flex" } : { display: "none" }]}>{item.AfterLunch ? "After Lunch" : ""}</Text>
+                  <Text style={[styles.textStyle3, item.BeforeDinner ? { display: "flex" } : { display: "none" }]}>{item.BeforeDinner ? "Before Dinner" : ""}</Text>
+                  <Text style={[styles.textStyle3, item.AfterDinner ? { display: "flex" } : { display: "none" }]}>{item.AfterDinner ? "After Dinner" : ""}</Text>
+                </View>
+              </View>
               <View style={styles.actions}>
                 <TouchableOpacity onPress={EditMedicine}>
                   <FontAwesome name="pen-to-square" size={25} color="#800000" />
@@ -191,34 +204,40 @@ export function Medicine(users) {
                 </TouchableOpacity>
               </View>
               <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(false);
-        }}
-      >
-        <View style={styles.modalView}>
-          <Text style={styles.modalTitle}>Are you sure you want to delete?</Text>
-          <View style={styles.modalBtns}>
-            <TouchableOpacity style={[styles.modalAction, { backgroundColor: "red" }]}>
-            <Text style={styles.modalActionText} onPress={()=>deleteMed(item.id)}>Yes</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setModalVisible(false)} style={[styles.modalAction, { backgroundColor: "green" }]}>
-            <Text style={styles.modalActionText}>No</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                  setModalVisible(false);
+                }}
+              >
+                <View style={styles.modalView}>
+                  <Text style={styles.modalTitle}>Are you sure you want to delete?</Text>
+                  <View style={styles.modalBtns}>
+                    <TouchableOpacity style={[styles.modalAction, { backgroundColor: "red" }]}>
+                      <Text style={styles.modalActionText} onPress={() => deleteMed(item.id)}>Yes</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setModalVisible(false)} style={[styles.modalAction, { backgroundColor: "green" }]}>
+                      <Text style={styles.modalActionText}>No</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Modal>
             </View>
           )
         })}
-      </View>
+      </ScrollView>
       <TouchableOpacity
         onPress={() => navigation.navigate("Add Medicine", { users })}
         style={styles.floatBtn}
       >
-        <Text style={styles.btnText}>Add Medicine +</Text>
+        <Text style={styles.btnText}>Add Medicine</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Add Medicine", { users })}
+        style={styles.floatBtnList}
+      >
+        <Text style={styles.btnText}>List All Medicine</Text>
       </TouchableOpacity>
     </View>
   );
@@ -229,6 +248,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "#fff"
+  },
+  scrollArea: {
+    maxHeight: 620,
   },
   tiles: {
     backgroundColor: '#fff',
@@ -245,6 +267,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
   },
+  header: {
+    fontSize: 20,
+    fontWeight: 'semibold',
+    color: "gray",
+    textAlign: 'right',
+  },
+  header2: {
+    marginVertical: 10, 
+    fontSize: 15,
+    fontWeight: 'semibold',
+    color: "black",
+  },
   textStyle1: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -255,12 +289,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 4,
     color: '#333',
+    marginRight: 5
   },
   textStyle3: {
     fontWeight: 'bold',
     color: '#444',
+    fontSize: 16,
   },
-  timings:{
+  timings: {
     display: "flex",
     flexDirection: 'column'
   },
@@ -270,8 +306,18 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 25,
     position: 'absolute',
-    bottom: 70,
+    bottom: 60,
     right: 20,
+    elevation: 4,
+  },
+  floatBtnList: {
+    backgroundColor: '#800000',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 25,
+    position: 'absolute',
+    bottom: 60,
+    left: 20,
     elevation: 4,
   },
   btnText: {

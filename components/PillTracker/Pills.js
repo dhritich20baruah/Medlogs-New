@@ -116,6 +116,7 @@ export function Medicine(users) {
   const fetchMeds = async () => {
     const response = await db.getAllAsync(`select * from medicine_list where user_id = ?`, [userID])
     setMedicationList(response)
+    console.log(response)
   }
 
   const calculateDuration = (startDate, endDate) => {
@@ -128,11 +129,11 @@ export function Medicine(users) {
     return durationDays
   }
 
-  const deleteMed = async () => {
+  const deleteMed = async (id) => {
     try {
-      await db.runAsync("DELETE FROM userData WHERE id = 6")
+      await db.runAsync("DELETE FROM medicine_list WHERE id=?", [id])
       Alert.alert("Deleted")
-      fetchUsers()
+      fetchMeds()
     } catch (error) {
       console.error(error)
     }
@@ -189,11 +190,7 @@ export function Medicine(users) {
                   <FontAwesome name="trash" size={25} color="#800000" />
                 </TouchableOpacity>
               </View>
-            </View>
-          )
-        })}
-      </View>
-      <Modal
+              <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
@@ -204,11 +201,19 @@ export function Medicine(users) {
         <View style={styles.modalView}>
           <Text style={styles.modalTitle}>Are you sure you want to delete?</Text>
           <View style={styles.modalBtns}>
-            <TouchableOpacity style={[styles.modalAction, { backgroundColor: "red" }]}><Text style={styles.modalActionText}>Yes</Text></TouchableOpacity>
-            <TouchableOpacity onPress={() => setModalVisible(false)} style={[styles.modalAction, { backgroundColor: "green" }]}><Text style={styles.modalActionText}>No</Text></TouchableOpacity>
+            <TouchableOpacity style={[styles.modalAction, { backgroundColor: "red" }]}>
+            <Text style={styles.modalActionText} onPress={()=>deleteMed(item.id)}>Yes</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setModalVisible(false)} style={[styles.modalAction, { backgroundColor: "green" }]}>
+            <Text style={styles.modalActionText}>No</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
+            </View>
+          )
+        })}
+      </View>
       <TouchableOpacity
         onPress={() => navigation.navigate("Add Medicine", { users })}
         style={styles.floatBtn}

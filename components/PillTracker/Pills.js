@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Text, StyleSheet, TouchableOpacity, SafeAreaView, View, Alert, Modal, ScrollView } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { Text, StyleSheet, TouchableOpacity, View, Alert, Modal, ScrollView } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Calendar from 'expo-calendar';
 import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
@@ -23,6 +23,13 @@ export function Medicine(users) {
   const userID = userInfo[0].id;
   const [medicationList, setMedicationList] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [medId, setMedID] = useState("")
+
+  useFocusEffect(
+    useCallback(()=>{
+      fetchMeds();
+    }, [])
+  );
 
   useEffect(() => {
     (async () => {
@@ -116,7 +123,6 @@ export function Medicine(users) {
   const fetchMeds = async () => {
     const response = await db.getAllAsync(`select * from medicine_list where user_id = ?`, [userID])
     setMedicationList(response)
-    console.log(response)
   }
 
   const calculateDuration = (startDate, endDate) => {
@@ -129,11 +135,17 @@ export function Medicine(users) {
     return durationDays
   }
 
-  const deleteMed = async (id) => {
+  const displayDeleteModal = (id) => {
+    setModalVisible(true);
+    setMedID(id)
+  }
+
+  const deleteMed = async () => {
     try {
-      await db.runAsync("DELETE FROM medicine_list WHERE id=?", [id])
-      Alert.alert("Deleted")
-      fetchMeds()
+      await db.runAsync("DELETE FROM medicine_list WHERE id=?", [medId]);
+      Alert.alert("Deleted");
+      fetchMeds();
+      setModalVisible(false);
     } catch (error) {
       console.error(error)
     }
@@ -181,7 +193,8 @@ export function Medicine(users) {
               <Text style={styles.textStyle1}>{item.medicineName}</Text>
               <Text style={styles.textStyle2}>Started on: <Text style={styles.textStyle3}>{item.startDate.split("-").reverse().join("-")}</Text></Text>
               <Text style={styles.textStyle2}>Duration:
-                <Text style={styles.textStyle3}> {calculateDuration(item.startDate, item.endDate)} Days</Text> </Text>
+                <Text style={styles.textStyle3}> {calculateDuration(item.startDate, item.endDate)} Days</Text> 
+              </Text>
               <View style={{display: "flex", flexDirection: "row"}}>
                 <View>
                 <Text style={styles.textStyle2}>Timings:</Text>
@@ -199,7 +212,7 @@ export function Medicine(users) {
                 <TouchableOpacity onPress={EditMedicine}>
                   <FontAwesome name="pen-to-square" size={25} color="#800000" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                <TouchableOpacity onPress={() => displayDeleteModal(item.id)}>
                   <FontAwesome name="trash" size={25} color="#800000" />
                 </TouchableOpacity>
               </View>
@@ -215,7 +228,7 @@ export function Medicine(users) {
                   <Text style={styles.modalTitle}>Are you sure you want to delete?</Text>
                   <View style={styles.modalBtns}>
                     <TouchableOpacity style={[styles.modalAction, { backgroundColor: "red" }]}>
-                      <Text style={styles.modalActionText} onPress={() => deleteMed(item.id)}>Yes</Text>
+                      <Text style={styles.modalActionText} onPress={deleteMed}>Yes</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => setModalVisible(false)} style={[styles.modalAction, { backgroundColor: "green" }]}>
                       <Text style={styles.modalActionText}>No</Text>
@@ -234,7 +247,7 @@ export function Medicine(users) {
         <Text style={styles.btnText}>Add Medicine</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => navigation.navigate("Add Medicine", { users })}
+        onPress={() => navigation.navigate("All Medicines", { users })}
         style={styles.floatBtnList}
       >
         <Text style={styles.btnText}>List All Medicine</Text>
@@ -274,8 +287,9 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   header2: {
-    marginVertical: 10, 
-    fontSize: 15,
+    marginVertical: 10,
+    fontStyle: "italic", 
+    fontSize: 20,
     fontWeight: 'semibold',
     color: "black",
   },

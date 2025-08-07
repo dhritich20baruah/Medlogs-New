@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Dashboard from './components/Dashboard';
 import Pills from './components/PillTracker/Pills';
 import AddMedicine from './components/PillTracker/AddMedicine';
+import ListMedicine from './components/PillTracker/ListMedicine';
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -514,6 +515,17 @@ function RootStack() {
           fontWeight: "bold",
         },
       }} />
+      <Stack.Screen name="All Medicines" component={ListMedicine}
+        options={{
+          headerStyle: {
+            backgroundColor: "#800000"
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
     </Stack.Navigator>
   );
 }

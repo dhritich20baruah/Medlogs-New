@@ -7,6 +7,8 @@ import Dashboard from './components/Dashboard';
 import Pills from './components/PillTracker/Pills';
 import AddMedicine from './components/PillTracker/AddMedicine';
 import ListMedicine from './components/PillTracker/ListMedicine';
+import Reports from './components/Reports/Reports';
+import CameraFunction from './components/Reports/CameraFunction';
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -17,6 +19,7 @@ const initializeDB = async (db) => {
         PRAGMA journal_mode = WAL;
         CREATE TABLE IF NOT EXISTS userData (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, age INTEGER, weight REAL, height REAL, breakfast TEXT, lunch TEXT, dinner TEXT);   
         CREATE TABLE IF NOT EXISTS medicine_list (id INTEGER PRIMARY KEY AUTOINCREMENT, medicineName TEXT, startDate TEXT, endDate TEXT, sunday INTEGER, monday INTEGER, tuesday INTEGER, wednesday INTEGER, thursday INTEGER, friday INTEGER, saturday INTEGER, BeforeBreakfast TEXT, AfterBreakfast TEXT, BeforeLunch TEXT, AfterLunch TEXT, BeforeDinner TEXT, AfterDinner TEXT, user_id INTEGER);  
+        CREATE TABLE IF NOT EXISTS diagnosticReports (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, date TEXT, uri TEXT, doctor TEXT, notes TEXT);
         `);
     console.log("DB connected");
   } catch (error) {
@@ -516,6 +519,28 @@ function RootStack() {
         },
       }} />
       <Stack.Screen name="All Medicines" component={ListMedicine}
+        options={{
+          headerStyle: {
+            backgroundColor: "#800000"
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen name="Reports & Prescriptions" component={Reports}
+        options={{
+          headerStyle: {
+            backgroundColor: "#800000"
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen name="Camera" component={CameraFunction}
         options={{
           headerStyle: {
             backgroundColor: "#800000"

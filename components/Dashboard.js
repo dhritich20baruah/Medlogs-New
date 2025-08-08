@@ -85,6 +85,9 @@ export function Menu(userID) {
                     <FontAwesome name="circle-arrow-right" size={20} color="#800000" />
                 </TouchableOpacity>
                 <TouchableOpacity
+                onPress={() => navigation.navigate("Reports & Prescriptions", {
+                        users
+                    })}
                     style={{
                         display: "flex",
                         flexDirection: "row",

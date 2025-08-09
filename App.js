@@ -13,6 +13,7 @@ import Display from './components/Reports/Display';
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import "expo-dev-client";
 
 const initializeDB = async (db) => {
   try {

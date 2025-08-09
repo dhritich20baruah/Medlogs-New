@@ -140,6 +140,7 @@ const styles = StyleSheet.create({
         width: 115,
         height: 115,
         margin: 1,
+        borderRadius: 5
     },
     floatBtn: {
         justifyContent: "center",

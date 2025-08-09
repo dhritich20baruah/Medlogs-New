@@ -21,7 +21,7 @@ export default function CameraFunction({ route }) {
     const { users } = route.params;
     return (
         <SQLiteProvider databaseName="Medlogs.db">
-            <Snap users={users}/>
+            <Snap users={users} />
         </SQLiteProvider>
     )
 }
@@ -139,7 +139,7 @@ export function Snap(users) {
                 zoom={zoom}
             >
                 <Slider
-                    style={{ width: "100%", height: 40, position: "absolute", top: "75%" }}
+                    style={{ width: "100%", height: 40, position: "absolute", top: "85%" }}
                     minimumValue={0}
                     maximumValue={1}
                     minimumTrackTintColor="cyan"
@@ -147,37 +147,18 @@ export function Snap(users) {
                     value={zoom}
                     onValueChange={(value) => setZoom(value)}
                 />
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={styles.button} onPress={toggleFlash}>
+                        <Text>
+                            {flashMode === "on" ? (
+                                <Ionicons name="flash-outline" size={20} color="white" />
+                            ) : (
+                                <Ionicons name="flash-off-outline" size={20} color="white" />
+                            )}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             </CameraView>
-            <TouchableOpacity
-                style={{
-                    marginBottom: 20,
-                    padding: 10,
-                    backgroundColor: "white",
-                    borderRadius: 5,
-                    position: "absolute",
-                    top: 5,
-                    left: 5,
-                }}
-                onPress={toggleFlash}
-            >
-                <Text style={{ fontSize: 18 }}>
-                    {flashMode === "on" ? (
-                        <Ionicons
-                            name="flash-outline"
-                            size={25}
-                            color="gray"
-                            style={styles.btnText}
-                        />
-                    ) : (
-                        <Ionicons
-                            name="flash-off-outline"
-                            size={25}
-                            color="gray"
-                            style={styles.btnText}
-                        />
-                    )}
-                </Text>
-            </TouchableOpacity>
             <TouchableOpacity style={styles.cameraBtn}>
                 <FontAwesome
                     name="camera"
@@ -229,5 +210,16 @@ const styles = StyleSheet.create({
     btnText: {
         textAlign: "center",
         padding: 10,
+    },
+    button: {
+        flex: 1,
+        alignSelf: "flex-end",
+        alignItems: "center",
+    },
+    buttonContainer: {
+        flex: 1,
+        flexDirection: "row",
+        backgroundColor: "transparent",
+        margin: 20,
     },
 });

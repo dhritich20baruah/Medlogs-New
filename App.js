@@ -9,6 +9,7 @@ import AddMedicine from './components/PillTracker/AddMedicine';
 import ListMedicine from './components/PillTracker/ListMedicine';
 import Reports from './components/Reports/Reports';
 import CameraFunction from './components/Reports/CameraFunction';
+import Display from './components/Reports/Display';
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -541,6 +542,17 @@ function RootStack() {
         }}
       />
       <Stack.Screen name="Camera" component={CameraFunction}
+        options={{
+          headerStyle: {
+            backgroundColor: "#800000"
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen name="Image" component={Display}
         options={{
           headerStyle: {
             backgroundColor: "#800000"

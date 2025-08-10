@@ -10,6 +10,8 @@ import ListMedicine from './components/PillTracker/ListMedicine';
 import Reports from './components/Reports/Reports';
 import CameraFunction from './components/Reports/CameraFunction';
 import Display from './components/Reports/Display';
+import BloodPressure from './components/BloodPressure/BloodPressure';
+import BloodSugar from './components/BloodSugar/BloodSugar';
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -22,6 +24,8 @@ const initializeDB = async (db) => {
         CREATE TABLE IF NOT EXISTS userData (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, age INTEGER, weight REAL, height REAL, breakfast TEXT, lunch TEXT, dinner TEXT);   
         CREATE TABLE IF NOT EXISTS medicine_list (id INTEGER PRIMARY KEY AUTOINCREMENT, medicineName TEXT, startDate TEXT, endDate TEXT, sunday INTEGER, monday INTEGER, tuesday INTEGER, wednesday INTEGER, thursday INTEGER, friday INTEGER, saturday INTEGER, BeforeBreakfast TEXT, AfterBreakfast TEXT, BeforeLunch TEXT, AfterLunch TEXT, BeforeDinner TEXT, AfterDinner TEXT, user_id INTEGER);  
         CREATE TABLE IF NOT EXISTS diagnosticReports (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, date TEXT, uri TEXT, doctor TEXT, notes TEXT);
+        CREATE TABLE IF NOT EXISTS blood_pressure (id INTEGER PRIMARY KEY AUTOINCREMENT, systolic INTEGER, diastolic INTEGER, pulse INTEGER, user_id INTEGER, date TEXT)
+        CREATE TABLE IF NOT EXISTS blood_sugar (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, test_type text, sugar_value INTEGER, user_id INTEGER)
         `);
     console.log("DB connected");
   } catch (error) {
@@ -554,6 +558,28 @@ function RootStack() {
         }}
       />
       <Stack.Screen name="Image" component={Display}
+        options={{
+          headerStyle: {
+            backgroundColor: "#800000"
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen name="Blood Pressure" component={BloodPressure}
+        options={{
+          headerStyle: {
+            backgroundColor: "#800000"
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen name='Blood Sugar' component={BloodSugar}
         options={{
           headerStyle: {
             backgroundColor: "#800000"

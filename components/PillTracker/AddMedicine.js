@@ -161,7 +161,8 @@ export function MedicationScheduleForm(users) {
     };
 
     const handleSave = async () => {
-        if (validateForm()) {
+        try {
+               if (validateForm()) {
             const calculatedEndDate = calculateEndDate(
                 date,
                 `${selectedValue} ${durationUnit}`
@@ -191,7 +192,11 @@ export function MedicationScheduleForm(users) {
             console.log(response)
             Alert.alert("Medicine Added");
             navigation.goBack()
+        } 
+        } catch (error) {
+            console.error(error)
         }
+    
     }
 
     return (

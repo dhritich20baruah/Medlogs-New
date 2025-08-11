@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import BloodSugarInfo from "./BloodSugarInfo";
 import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
-import { useFocusEffect } from "@react-navigation/native";
 
 export default function BloodSugar({ route }) {
     const { users } = route.params;
@@ -45,47 +44,35 @@ export function BloodSugarScreen(users) {
     const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
-        // db.transaction((tx) => {
-        //     tx.executeSql(
-        //         "SELECT * FROM blood_sugar WHERE user_id = ?",
-        //         [userID],
-        //         (txObj, resultSet) => {
-        //             const readings = resultSet.rows._array.map((item) => ({
-        //                 id: item.id,
-        //                 date: item.date,
-        //                 testType: item.test_type,
-        //                 sugarValue: item.sugar_value,
-        //             }));
-        //             // Update the state with the fetched readings
-        //             if (readings.length !== 0) {
-        //                 const fastingSugar = readings.filter(
-        //                     (item) => item.testType == "Fasting"
-        //                 );
-        //                 setFasting(fastingSugar);
-
-        //                 const ppSugar = readings.filter(
-        //                     (item) => item.testType == "Postprandial"
-        //                 );
-        //                 setPostprandial(ppSugar);
-
-        //                 const RandomSugar = readings.filter(
-        //                     (item) => item.testType == "Random"
-        //                 );
-        //                 setRandom(RandomSugar);
-
-        //                 setPrevReadings(readings);
-        //             }
-        //         },
-        //         (txObj, error) => console.log(error)
-        //     );
-        // });
         fetchSugar();
     }, []);
 
     const fetchSugar = async () => {
-        const response = await db.getAllAsync( "SELECT * FROM blood_sugar WHERE user_id = ?",
-                [userID])
-        console.log(response)
+        const response = await db.getAllAsync("SELECT * FROM blood_sugar WHERE user_id = ?", [userID]);
+        const readings = response.map((item) => ({
+            id: item.id,
+            date: item.date,
+            testType: item.test_type,
+            sugarValue: item.sugar_value,
+        }));
+        if (readings.length !== 0) {
+            const fastingSugar = readings.filter(
+                (item) => item.testType == "Fasting"
+            );
+            setFasting(fastingSugar);
+
+            const ppSugar = readings.filter(
+                (item) => item.testType == "Postprandial"
+            );
+            setPostprandial(ppSugar);
+
+            const RandomSugar = readings.filter(
+                (item) => item.testType == "Random"
+            );
+            setRandom(RandomSugar);
+
+            setPrevReadings(readings);
+        };
     }
 
     const getColorForFBS = (sugar) => {
@@ -172,48 +159,9 @@ export function BloodSugarScreen(users) {
             let sugar = mgDL ? sugarValue : sugarValue * 18;
 
             const response = await db.runAsync("INSERT INTO blood_sugar (date, test_type, sugar_value, user_id) values (?, ?, ?, ?)",
-                    [date, testType, sugar, userID],)
-
-            // db.transaction((tx) => {
-            //     tx.executeSql(
-            //         "INSERT INTO blood_sugar (date, test_type, sugar_value, user_id) values (?, ?, ?, ?)",
-            //         [date, testType, sugar, userID],
-            //         (txObj, resultSet) => {
-            //             if (testType == "Fasting") {
-            //                 let lastReading = [...fasting];
-            //                 lastReading.push({
-            //                     id: resultSet.insertId,
-            //                     testType: testType,
-            //                     sugarValue: sugarValue,
-            //                     date: date,
-            //                 });
-            //                 setFasting(lastReading);
-            //             }
-            //             if (testType == "Postprandial") {
-            //                 let lastReading = [...postprandial];
-            //                 lastReading.push({
-            //                     id: resultSet.insertId,
-            //                     testType: testType,
-            //                     sugarValue: sugarValue,
-            //                     date: date,
-            //                 });
-            //                 setPostprandial(lastReading);
-            //             }
-            //             if (testType == "Random") {
-            //                 let lastReading = [...random];
-            //                 lastReading.push({
-            //                     id: resultSet.insertId,
-            //                     testType: testType,
-            //                     sugarValue: sugarValue,
-            //                     date: date,
-            //                 });
-            //                 setRandom(lastReading);
-            //             }
-            //             setSugarValue("");
-            //         },
-            //         (txObj, error) => console.log(error)
-            //     );
-            // });
+                [date, testType, sugar, userID],);
+             setSugarValue("");
+             fetchSugar();
         }
     };
 

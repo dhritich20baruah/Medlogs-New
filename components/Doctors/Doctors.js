@@ -45,7 +45,6 @@ export function DoctorsScreen(users) {
         try {
             const response = await db.getAllAsync("SELECT * FROM doctors_Info WHERE user_id = ?", [userID])
             setDoctorList(response);
-            console.log(response)
         } catch (error) {
             console.error(error)
         }
@@ -105,8 +104,7 @@ export function DoctorsScreen(users) {
     const editInfo = () => {
         setModalVisible(false);
         navigation.navigate("Edit Doctor Information", {
-            userID,
-            doctorsDetails,
+            doctorsDetails
         });
     };
 

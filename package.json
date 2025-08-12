@@ -18,6 +18,8 @@
     "expo-calendar": "~14.1.4",
     "expo-camera": "^16.1.11",
     "expo-constants": "~17.1.7",
+    "expo-dev-client": "~5.2.4",
+    "expo-file-system": "^18.1.11",
     "expo-image-picker": "~16.1.4",
     "expo-media-library": "~17.1.7",
     "expo-notifications": "^0.31.4",
@@ -27,10 +29,12 @@
     "react": "19.0.0",
     "react-native": "0.79.5",
     "react-native-calendars": "^1.1313.0",
+    "react-native-gifted-charts": "^1.4.63",
+    "react-native-google-mobile-ads": "^15.4.0",
+    "react-native-phone-call": "^1.2.0",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
-    "react-native-wheel-scrollview-picker": "^2.0.9",
-    "expo-dev-client": "~5.2.4"
+    "react-native-wheel-scrollview-picker": "^2.0.9"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

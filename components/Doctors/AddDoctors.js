@@ -11,20 +11,21 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation } from "@react-navigation/native";
 import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
 
-export default function AddDoctor({route}){
-    const {users} = route.params;
-    return(
-        <SQLiteProvider databaseName="Medlogs.db">
-            <AddDoctorForm users={users}/>
-        </SQLiteProvider>
-    )
+export default function AddDoctor({ route }) {
+  const { users } = route.params;
+  return (
+    <SQLiteProvider databaseName="Medlogs.db">
+      <AddDoctorForm users={users} />
+    </SQLiteProvider>
+  )
 }
 
 export function AddDoctorForm(users) {
   const navigation = useNavigation();
+  const db = useSQLiteContext();
   const userInfo = users.users;
   console.log(userInfo);
-  const userID  = 1
+  const userID = 1
   const [date, setDate] = useState(new Date());
   const [name, setName] = useState("");
   const [specialty, setSpecialty] = useState("");
@@ -66,11 +67,10 @@ export function AddDoctorForm(users) {
     return true;
   };
 
-  const handleSubmit = () => {
-    if (validateForm()) {
-      db.transaction((tx) => {
-        tx.executeSql(
-          "INSERT INTO doctors_Info (name, specialty, address, contactNumber, lastVisited, nextVisit, prescription, user_id) values (?, ?, ?, ?, ?, ?, ?, ?)",
+  const handleSubmit = async () => {
+    try {
+      if (validateForm()) {
+        const response = await db.runAsync("INSERT INTO doctors_Info (name, specialty, address, contactNumber, lastVisited, nextVisit, prescription, user_id) values (?, ?, ?, ?, ?, ?, ?, ?)",
           [
             name,
             specialty,
@@ -80,22 +80,19 @@ export function AddDoctorForm(users) {
             nextVisit,
             prescription,
             userID,
-          ],
-          (txObj, resultSet) => {
-            Alert.alert("Success", "Doctor's information saved successfully!");
-            clearForm();
-            navigation.goBack(); // Navigate back to the previous screen
-          },
-          (txObj, error) => {
-            console.log("Insert Error:", error);
-            Alert.alert(
-              "Error",
-              "An error occurred while saving the doctor's information."
-            );
-          }
-        );
-      });
+          ]);
+        Alert.alert("Success", "Doctor's information saved successfully!");
+        clearForm();
+        navigation.goBack(); // Navigate back to the previous screen
+      }
+    } catch (error) {
+      console.log("Insert Error:", error);
+      Alert.alert(
+        "Error",
+        "An error occurred while saving the doctor's information."
+      );
     }
+
   };
 
   const clearForm = () => {
@@ -183,41 +180,41 @@ export function AddDoctorForm(users) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flexGrow: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      padding: 20,
-      backgroundColor: "#fff",
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: "bold",
-      marginBottom: 20,
-    },
-    input: {
-      width: "100%",
-      padding: 10,
-      borderWidth: 1,
-      borderColor: "#800000",
-      borderRadius: 5,
-      marginBottom: 10,
-    },
-    button: {
-      width: "100%",
-      padding: 15,
-      backgroundColor: "#800000",
-      borderRadius: 5,
-      alignItems: "center",
-    },
-    buttonText: {
-      color: "#fff",
-      fontSize: 16,
-      fontWeight: "bold",
-    },
-    textStyle: {
-      fontSize: 16,
-      marginVertical: 10,
-      fontWeight: "500",
-    },
-  });
+  container: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    backgroundColor: "#fff",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  input: {
+    width: "100%",
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#800000",
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  button: {
+    width: "100%",
+    padding: 15,
+    backgroundColor: "#800000",
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  textStyle: {
+    fontSize: 16,
+    marginVertical: 10,
+    fontWeight: "500",
+  },
+});

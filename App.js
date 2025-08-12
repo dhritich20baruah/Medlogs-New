@@ -14,6 +14,8 @@ import BloodPressure from './components/BloodPressure/BloodPressure';
 import BloodSugar from './components/BloodSugar/BloodSugar';
 import Doctors from './components/Doctors/Doctors';
 import AddDoctor from './components/Doctors/AddDoctors';
+import EditDoctor from './components/Doctors/EditDoctors';
+import BMIScreen from './components/BMI/BMI';
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -604,7 +606,29 @@ function RootStack() {
           },
         }}
       />
-      <Stack.Screen name="Add Doctors" component={AddDoctor}
+      <Stack.Screen name="Add Doctor Information" component={AddDoctor}
+        options={{
+          headerStyle: {
+            backgroundColor: "#800000"
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen name="Edit Doctor Information" component={EditDoctor}
+         options={{
+          headerStyle: {
+            backgroundColor: "#800000"
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen name="BMI" component={BMIScreen}
         options={{
           headerStyle: {
             backgroundColor: "#800000"

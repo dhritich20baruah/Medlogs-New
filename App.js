@@ -16,6 +16,9 @@ import Doctors from './components/Doctors/Doctors';
 import AddDoctor from './components/Doctors/AddDoctors';
 import EditDoctor from './components/Doctors/EditDoctors';
 import BMIScreen from './components/BMI/BMI';
+import Settings from './components/Settings/Settings';
+import PrivacyPolicy from './components/Settings/PrivacyPolicy';
+import EditProfile from './components/Settings/EditProfile';
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -629,6 +632,39 @@ function RootStack() {
         }}
       />
       <Stack.Screen name="BMI" component={BMIScreen}
+        options={{
+          headerStyle: {
+            backgroundColor: "#800000"
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen name="Settings" component={Settings}
+        options={{
+          headerStyle: {
+            backgroundColor: "#800000"
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen name="Privacy Policy" component={PrivacyPolicy}
+        options={{
+          headerStyle: {
+            backgroundColor: "#800000"
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen name='Edit Profile' component={EditProfile}
         options={{
           headerStyle: {
             backgroundColor: "#800000"

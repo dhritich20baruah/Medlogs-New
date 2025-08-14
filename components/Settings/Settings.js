@@ -10,24 +10,25 @@ import {
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
-// import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { Linking } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome6";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Settings({ route }) {
     const { users } = route.params;
     return (
         <SQLiteProvider databaseName="Medlogs.db">
-            <SettingsScreen users={users} />
+            <SettingsScreen user={users} />
         </SQLiteProvider>
     )
 }
 
-export function SettingsScreen(users) {
+export function SettingsScreen(user) {
     const db = useSQLiteContext();
-    const navigation = useNavigation()
-    const userInfo = users.users[0];
+    const navigation = useNavigation();
+    const userInfo = user.user;
     const userID = userInfo.id;
     const [modalVisible, setModalVisible] = useState(false);
     const [exportModalVisible, setExportModalVisible] = useState(false);
@@ -45,18 +46,10 @@ export function SettingsScreen(users) {
         },
     ]);
 
+
     useFocusEffect(
         useCallback(() => {
-            db.transaction((tx) => {
-                tx.executeSql(
-                    "SELECT * FROM userData WHERE id = ?",
-                    [userID],
-                    (txObj, resultSet) => {
-                        setUsers(resultSet.rows._array);
-                    },
-                    (txObj, error) => console.log(error)
-                );
-            });
+            setUsers(userInfo)
         }, [])
     );
 
@@ -74,11 +67,11 @@ export function SettingsScreen(users) {
         console.log("blood_sugar table removed");
 
         await db.runAsync("DELETE FROM doctors_Info WHERE user_id=?",
-        [userID]);
+            [userID]);
         console.log("doctors_Info table removed");
 
         await db.runAsync("DELETE FROM userData WHERE id=?",
-        [userID])
+            [userID])
         setDeleteVisible(false);
         navigation.navigate("Med Logger");
         console.log("userData table removed");
@@ -107,33 +100,26 @@ export function SettingsScreen(users) {
     };
 
     const fetchDataAndExport = async (tableName) => {
-        db.transaction((tx) => {
-            tx.executeSql(
-                `SELECT * FROM ${tableName}`,
-                [],
-                async (txObj, resultSet) => {
-                    const rows = resultSet.rows._array;
+        try {
+            const rows = await db.getAllAsync(`SELECT * FROM ${tableName}`, [])
+            console.log(rows)
+            // Convert rows to CSV
+            const csv = convertJSONToCSV(rows);
+            // Define the file path
+            const fileUri = FileSystem.documentDirectory + `${tableName}.csv`;
 
-                    // Convert rows to CSV
-                    const csv = convertJSONToCSV(rows);
-                    // Define the file path
-                    const fileUri = FileSystem.documentDirectory + `${tableName}.csv`;
+            // Write the CSV to the file
+            await FileSystem.writeAsStringAsync(fileUri, csv, {
+                encoding: FileSystem.EncodingType.UTF8,
+            });
 
-                    // Write the CSV to the file
-                    await FileSystem.writeAsStringAsync(fileUri, csv, {
-                        encoding: FileSystem.EncodingType.UTF8,
-                    });
-
-                    // Share the file
-                    await Sharing.shareAsync(fileUri);
-                    Alert.alert("Success", "Data exported successfully!");
-                },
-                (txObj, error) => {
-                    console.error("Error exporting data:", error);
-                    Alert.alert("Error", "Failed to export data.");
-                }
-            );
-        });
+            // Share the file
+            await Sharing.shareAsync(fileUri);
+            Alert.alert("Success", "Data exported successfully!");
+        } catch (error) {
+            console.error("Error exporting data:", error);
+            Alert.alert("Error", "Failed to export data.");
+        }
     };
 
     const openExternalURL = () => {
@@ -162,7 +148,7 @@ export function SettingsScreen(users) {
                 <TouchableOpacity
                     style={styles.touch}
                     onPress={() => {
-                        navigation.navigate("Edit Profile", { userID, users });
+                        navigation.navigate("Edit Profile", user);
                     }}
                 >
                     <Text style={styles.btnText}>Edit Profile</Text>

@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ImageBackground } from "react-native";
+import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
 
-export default function BMIScreen() {
+export default function BMIScreen({ route }) {
+  const { users } = route.params;
+  return (
+    <SQLiteProvider databaseName="Medlogs.db">
+      <BMICalculator users={users} />
+    </SQLiteProvider>
+  )
+}
+
+export function BMICalculator(users) {
+  const db = useSQLiteContext();
+  const userInfo = users.users;
+  console.log(userInfo)
   const [currentBMI, setCurrentBMI] = useState(null);
   const [category, setCategory] = useState("");
   const [date, setDate] = useState("");
@@ -13,8 +26,8 @@ export default function BMIScreen() {
   // Fetch latest BMI from database
   useEffect(() => {
     // Example static data, replace with SQLite query
-    const dbWeight = 70; // from DB
-    const dbHeight = 170; // from DB (cm)
+    const dbWeight = userInfo[0].weight; // from DB
+    const dbHeight = userInfo[0].height; // from DB (cm)
     const bmiValue = calculateBMI(dbWeight, dbHeight);
     setCurrentBMI(bmiValue);
     setCategory(getBMICategory(bmiValue));

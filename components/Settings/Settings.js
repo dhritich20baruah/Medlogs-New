@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
     Text,
     View,
@@ -29,7 +29,7 @@ export function SettingsScreen(user) {
     const db = useSQLiteContext();
     const navigation = useNavigation();
     const userInfo = user.user;
-    const userID = userInfo.id;
+    const userID = userInfo[0].id;
     const [modalVisible, setModalVisible] = useState(false);
     const [exportModalVisible, setExportModalVisible] = useState(false);
     const [deleteVisible, setDeleteVisible] = useState(false);
@@ -49,9 +49,19 @@ export function SettingsScreen(user) {
 
     useFocusEffect(
         useCallback(() => {
-            setUsers(userInfo)
+            fetchUsers()
         }, [])
     );
+
+    useEffect(()=>{
+        fetchUsers()
+    }, [])
+
+    async function fetchUsers() {
+        const result = await db.getAllAsync("SELECT * FROM userData WHERE id = ?", [userID]);
+        setUsers(result)
+        console.log(result)
+    }
 
     const deleteProfile = async () => {
         await db.runAsync("DELETE FROM medicine_list WHERE user_id=?", [userID]);

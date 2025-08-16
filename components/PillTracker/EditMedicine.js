@@ -8,50 +8,53 @@ import {
     ScrollView,
     StyleSheet,
 } from "react-native";
+
 import DateTimePicker from "@react-native-community/datetimepicker";
 import ScrollPicker from "react-native-wheel-scrollview-picker";
 import { useNavigation } from "@react-navigation/native";
 import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
 
-const AddMedicine = ({ route }) => {
-    const { users } = route.params
+export default function EditMedicine({ route }) {
+    const result = route.params[0];
     return (
         <SQLiteProvider databaseName="Medlogs.db">
-            <MedicationScheduleForm users={users} />
+            <EditMedicineForm result={result} />
         </SQLiteProvider>
     )
 }
 
-export function MedicationScheduleForm(users) {
+export function EditMedicineForm(result) {
     const db = useSQLiteContext();
     const navigation = useNavigation()
-    const userInfo = users.users.users[0];
-    const [medicineName, setMedicineName] = useState("");
+    const med = result.result
+    console.log(med)
+    const [medicineName, setMedicineName] = useState(
+        med.medicineName
+    );
 
-    let dateString = new Date().toISOString();
-    let formattedDate = dateString.slice(0, dateString.indexOf("T"));
+    let initialDate = new Date(med.startDate);
 
-    const [date, setDate] = useState(new Date());
+    const [date, setDate] = useState(initialDate);
     const [durationUnit, setDurationUnit] = useState("Days");
-    const [startDate, setStartDate] = useState(formattedDate);
-    const [endDate, setEndDate] = useState("");
+    const [startDate, setStartDate] = useState(med.startDate);
+    const [endDate, setEndDate] = useState(med.endDate);
     const [showDate, setShowDate] = useState(false);
     const [days, setDays] = useState({
-        sunday: false,
-        monday: false,
-        tuesday: false,
-        wednesday: false,
-        thursday: false,
-        friday: false,
-        saturday: false,
+        sunday: med.sunday,
+        monday: med.monday,
+        tuesday: med.tuesday,
+        wednesday: med.wednesday,
+        thursday: med.thursday,
+        friday: med.friday,
+        saturday: med.saturday,
     });
     const [timing, setTiming] = useState({
-        BeforeBreakfast: false,
-        AfterBreakfast: false,
-        BeforeLunch: false,
-        AfterLunch: false,
-        BeforeDinner: false,
-        AfterDinner: false,
+        BeforeBreakfast: med.BeforeBreakfast,
+        AfterBreakfast: med.AfterBreakfast,
+        BeforeLunch: med.BeforeLunch,
+        AfterLunch: med.AfterLunch,
+        BeforeDinner: med.BeforeDinner,
+        AfterDinner: med.AfterDinner,
     });
     const [allSelected, setAllSelected] = useState(false);
 
@@ -83,6 +86,7 @@ export function MedicationScheduleForm(users) {
         }));
     };
 
+    // DATE PICKER
     const toggleShowDate = () => {
         setShowDate(!showDate);
     };
@@ -137,64 +141,41 @@ export function MedicationScheduleForm(users) {
         return `${newHours}:${newMinutes}`;
     };
 
-    const validateForm = () => {
-        if (!medicineName.trim()) {
-            Alert.alert("Validation Error", "Medicine name is required.");
-            return false;
-        }
-
-        const isDaySelected = Object.values(days).some((day) => day);
-        if (!isDaySelected) {
-            Alert.alert("Validation Error", "Please select at least one day.");
-            return false;
-        }
-
-        const isTimingSelected = Object.values(timing).some((time) => time);
-        if (!isTimingSelected) {
-            Alert.alert("Validation Error", "Please select at least one timing.");
-            return false;
-        }
-
-        return true;
-    };
-
     const handleSave = async () => {
-        try {
-            if (validateForm()) {
-                const calculatedEndDate = calculateEndDate(
-                    date,
-                    `${selectedValue} ${durationUnit}`
-                );
-                setEndDate(calculatedEndDate);
+        const calculatedEndDate = calculateEndDate(
+            date,
+            `${selectedValue} ${durationUnit}`
+        );
+        setEndDate(calculatedEndDate);
 
-                const response = await db.runAsync(`INSERT INTO medicine_list (medicineName, startDate, endDate, sunday, monday, tuesday, wednesday, thursday, friday, saturday, BeforeBreakfast, AfterBreakfast, BeforeLunch, AfterLunch, BeforeDinner, AfterDinner, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                    [
-                        medicineName,
-                        startDate,
-                        calculatedEndDate,
-                        days.sunday ? 1 : 0,
-                        days.monday ? 1 : 0,
-                        days.tuesday ? 1 : 0,
-                        days.wednesday ? 1 : 0,
-                        days.thursday ? 1 : 0,
-                        days.friday ? 1 : 0,
-                        days.saturday ? 1 : 0,
-                        timing.BeforeBreakfast ? subtractMinutes(userInfo.breakfast) : "",
-                        timing.AfterBreakfast ? userInfo.breakfast : "",
-                        timing.BeforeLunch ? subtractMinutes(userInfo.lunch) : "",
-                        timing.AfterLunch ? userInfo.lunch : "",
-                        timing.BeforeDinner ? subtractMinutes(userInfo.dinner) : "",
-                        timing.AfterDinner ? userInfo.dinner : "",
-                        userInfo.id,
-                    ]);
-                Alert.alert("Medicine Added");
-                navigation.goBack()
-            }
-        } catch (error) {
-            console.error(error)
-        }
+        const response = db.runAsync(`UPDATE medicine_list  SET medicineName = ?, startDate = ?, endDate = ?, sunday = ?, monday = ?, tuesday = ?, wednesday = ?, thursday = ?, friday = ?, saturday = ?, BeforeBreakfast = ?, AfterBreakfast = ?, BeforeLunch = ?, AfterLunch = ?, BeforeDinner = ?, AfterDinner = ? WHERE id = ? AND user_id = ?`,
+            [
+                medicineName,
+                startDate,
+                endDate,
+                days.sunday ? 1 : 0,
+                days.monday ? 1 : 0,
+                days.tuesday ? 1 : 0,
+                days.wednesday ? 1 : 0,
+                days.thursday ? 1 : 0,
+                days.friday ? 1 : 0,
+                days.saturday ? 1 : 0,
+                timing.BeforeBreakfast ? subtractMinutes(med.breakfast) : "",
+                timing.AfterBreakfast ? med.breakfast : "",
+                timing.BeforeLunch ? subtractMinutes(med.lunch) : "",
+                timing.AfterLunch ? med.lunch : "",
+                timing.BeforeDinner ? subtractMinutes(med.dinner) : "",
+                timing.AfterDinner ? med.dinner : "",
+                med.id,
+                med.user_id,
+            ],)
+        Alert.alert("Medicine Updated");
+        navigation.goBack();
 
-    }
+        // setTimeout(() => {
+
+        // }, 100);
+    };
 
     return (
         <ScrollView>
@@ -213,7 +194,7 @@ export function MedicationScheduleForm(users) {
                 {/* START DATE */}
                 <View>
                     <Text style={styles.textStyle}>
-                        When will you start taking the medicine?
+                        You started to take this medication on:
                     </Text>
                     <TouchableOpacity onPress={toggleShowDate}>
                         <Text style={styles.textStyleSecondary}>{date.toDateString()}</Text>
@@ -225,6 +206,7 @@ export function MedicationScheduleForm(users) {
                             is24Hour={true}
                             display="spinner"
                             onChange={handleDate}
+                            minimumDate={date}
                         />
                     )}
                 </View>
@@ -232,7 +214,7 @@ export function MedicationScheduleForm(users) {
                 {/* DURATION OF MEDICATION */}
                 <View>
                     <Text style={styles.textStyle}>
-                        How long will you be taking this medicine?
+                        Do you want to change the duration?
                     </Text>
                     <View
                         style={{
@@ -271,7 +253,9 @@ export function MedicationScheduleForm(users) {
                 </View>
 
                 {/* MEDICATION SCHEDULE */}
-                <Text style={styles.textStyle}>How often do you need to take it?</Text>
+                <Text style={styles.textStyle}>
+                    Do you want to change your medication days?
+                </Text>
                 <View style={styles.radioAllBtnContainer}>
                     <TouchableOpacity
                         style={[
@@ -332,7 +316,7 @@ export function MedicationScheduleForm(users) {
 
                 {/* MEDICATION TIMINGS */}
                 <Text style={styles.textStyle}>
-                    At what time should you be taking the medicines?
+                    Do you want to change your medication times?
                 </Text>
                 <View>
                     {/* Breakfast */}
@@ -400,7 +384,7 @@ export function MedicationScheduleForm(users) {
                     </View>
                 </View>
                 <TouchableOpacity onPress={handleSave} style={styles.saveBtnContainer}>
-                    <Text style={styles.saveBtn}>ADD MEDICINE +</Text>
+                    <Text style={styles.saveBtn}>UPDATE MEDICINE</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>
@@ -521,5 +505,3 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
 });
-
-export default AddMedicine;

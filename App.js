@@ -7,6 +7,7 @@ import Dashboard from './components/Dashboard';
 import Pills from './components/PillTracker/Pills';
 import AddMedicine from './components/PillTracker/AddMedicine';
 import ListMedicine from './components/PillTracker/ListMedicine';
+import EditMedicine from './components/PillTracker/EditMedicine';
 import Reports from './components/Reports/Reports';
 import CameraFunction from './components/Reports/CameraFunction';
 import Display from './components/Reports/Display';
@@ -19,6 +20,7 @@ import BMIScreen from './components/BMI/BMI';
 import Settings from './components/Settings/Settings';
 import PrivacyPolicy from './components/Settings/PrivacyPolicy';
 import EditProfile from './components/Settings/EditProfile';
+import History from './components/History/History';
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -543,6 +545,17 @@ function RootStack() {
           },
         }}
       />
+      <Stack.Screen name='Edit Medicine' component={EditMedicine}
+        options={{
+          headerStyle: {
+            backgroundColor: "#800000"
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
       <Stack.Screen name="Reports & Prescriptions" component={Reports}
         options={{
           headerStyle: {
@@ -621,7 +634,7 @@ function RootStack() {
         }}
       />
       <Stack.Screen name="Edit Doctor Information" component={EditDoctor}
-         options={{
+        options={{
           headerStyle: {
             backgroundColor: "#800000"
           },
@@ -665,6 +678,17 @@ function RootStack() {
         }}
       />
       <Stack.Screen name='Edit Profile' component={EditProfile}
+        options={{
+          headerStyle: {
+            backgroundColor: "#800000"
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen name="History" component={History}
         options={{
           headerStyle: {
             backgroundColor: "#800000"

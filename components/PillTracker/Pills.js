@@ -24,6 +24,7 @@ export function Medicine(users) {
   const [medicationList, setMedicationList] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [medId, setMedID] = useState("")
+  const [selectedMed, setSelectedMed] = useState([])
 
   useFocusEffect(
     useCallback(()=>{
@@ -151,10 +152,6 @@ export function Medicine(users) {
     }
   }
 
-  const EditMedicine = () => {
-    setModalVisible(false)
-  }
-
    const today = new Date();
 
   const weekday = today.toLocaleDateString('en-US', { weekday: 'long' }); // e.g., Monday
@@ -163,6 +160,12 @@ export function Medicine(users) {
     month: '2-digit',
     year: 'numeric'
   });
+
+  const EditMedicine = async (id) =>{
+    const result = await db.getAllAsync(`SELECT * FROM medicine_list WHERE id = ? AND user_id = ?`, [id, userID]);
+    setSelectedMed(result);
+    await navigation.navigate("Edit Medicine", result)
+  }
 
   return (
     <View style={styles.container}>
@@ -209,7 +212,7 @@ export function Medicine(users) {
                 </View>
               </View>
               <View style={styles.actions}>
-                <TouchableOpacity onPress={EditMedicine}>
+                <TouchableOpacity  onPress={()=>EditMedicine(item.id)} >
                   <FontAwesome name="pen-to-square" size={25} color="#800000" />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => displayDeleteModal(item.id)}>

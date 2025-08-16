@@ -14,7 +14,6 @@ export default function BMIScreen({ route }) {
 export function BMICalculator(users) {
   const db = useSQLiteContext();
   const userInfo = users.users;
-  console.log(userInfo)
   const [currentBMI, setCurrentBMI] = useState(null);
   const [category, setCategory] = useState("");
   const [date, setDate] = useState("");

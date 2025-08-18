@@ -27,7 +27,6 @@ export function EditMedicineForm(result) {
     const db = useSQLiteContext();
     const navigation = useNavigation()
     const med = result.result
-    console.log(med)
     const [medicineName, setMedicineName] = useState(
         med.medicineName
     );
@@ -84,6 +83,7 @@ export function EditMedicineForm(result) {
             ...prevSelections,
             [key]: !prevSelections[key],
         }));
+        console.log(key)
     };
 
     // DATE PICKER
@@ -130,6 +130,7 @@ export function EditMedicineForm(result) {
     };
 
     const subtractMinutes = (timeStr) => {
+        console.log(timeStr)
         let minutesToSubtract = 30;
         const [hours, minutes] = timeStr.split(":").map(Number);
         const date = new Date();
@@ -147,10 +148,9 @@ export function EditMedicineForm(result) {
             `${selectedValue} ${durationUnit}`
         );
         setEndDate(calculatedEndDate);
+        console.log(subtractMinutes(med.breakfast))
 
-        const response = db.runAsync(`UPDATE medicine_list  SET medicineName = ?, startDate = ?, endDate = ?, sunday = ?, monday = ?, tuesday = ?, wednesday = ?, thursday = ?, friday = ?, saturday = ?, BeforeBreakfast = ?, AfterBreakfast = ?, BeforeLunch = ?, AfterLunch = ?, BeforeDinner = ?, AfterDinner = ? WHERE id = ? AND user_id = ?`,
-            [
-                medicineName,
+        console.log( medicineName,
                 startDate,
                 endDate,
                 days.sunday ? 1 : 0,
@@ -167,14 +167,31 @@ export function EditMedicineForm(result) {
                 timing.BeforeDinner ? subtractMinutes(med.dinner) : "",
                 timing.AfterDinner ? med.dinner : "",
                 med.id,
-                med.user_id,
-            ],)
-        Alert.alert("Medicine Updated");
-        navigation.goBack();
+                med.user_id,)
 
-        // setTimeout(() => {
-
-        // }, 100);
+        // const response = db.runAsync(`UPDATE medicine_list  SET medicineName = ?, startDate = ?, endDate = ?, sunday = ?, monday = ?, tuesday = ?, wednesday = ?, thursday = ?, friday = ?, saturday = ?, BeforeBreakfast = ?, AfterBreakfast = ?, BeforeLunch = ?, AfterLunch = ?, BeforeDinner = ?, AfterDinner = ? WHERE id = ? AND user_id = ?`,
+        //     [
+        //         medicineName,
+        //         startDate,
+        //         endDate,
+        //         days.sunday ? 1 : 0,
+        //         days.monday ? 1 : 0,
+        //         days.tuesday ? 1 : 0,
+        //         days.wednesday ? 1 : 0,
+        //         days.thursday ? 1 : 0,
+        //         days.friday ? 1 : 0,
+        //         days.saturday ? 1 : 0,
+        //         timing.BeforeBreakfast ? subtractMinutes(med.breakfast) : "",
+        //         timing.AfterBreakfast ? med.breakfast : "",
+        //         timing.BeforeLunch ? subtractMinutes(med.lunch) : "",
+        //         timing.AfterLunch ? med.lunch : "",
+        //         timing.BeforeDinner ? subtractMinutes(med.dinner) : "",
+        //         timing.AfterDinner ? med.dinner : "",
+        //         med.id,
+        //         med.user_id,
+        //     ],)
+        // Alert.alert("Medicine Updated");
+        // navigation.goBack();
     };
 
     return (

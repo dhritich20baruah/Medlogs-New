@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Text,
     View,
@@ -30,9 +30,8 @@ export function EditMedicineForm(result) {
     const [medicineName, setMedicineName] = useState(
         med.medicineName
     );
-
+    const [user, setUser] = useState([])
     let initialDate = new Date(med.startDate);
-
     const [date, setDate] = useState(initialDate);
     const [durationUnit, setDurationUnit] = useState("Days");
     const [startDate, setStartDate] = useState(med.startDate);
@@ -56,6 +55,15 @@ export function EditMedicineForm(result) {
         AfterDinner: med.AfterDinner,
     });
     const [allSelected, setAllSelected] = useState(false);
+
+    useEffect(() => {
+        fetchUsers()
+    }, [])
+
+    async function fetchUsers() {
+        const result = await db.getAllAsync("SELECT * FROM userData WHERE id = ?", [med.user_id]);
+        setUser(result)
+    }
 
     // Scroll picker
     const daysWeeksMonths = ["Days", "Weeks", "Months"];
@@ -83,7 +91,6 @@ export function EditMedicineForm(result) {
             ...prevSelections,
             [key]: !prevSelections[key],
         }));
-        console.log(key)
     };
 
     // DATE PICKER
@@ -148,9 +155,10 @@ export function EditMedicineForm(result) {
             `${selectedValue} ${durationUnit}`
         );
         setEndDate(calculatedEndDate);
-        console.log(subtractMinutes(med.breakfast))
 
-        console.log( medicineName,
+        const response = db.runAsync(`UPDATE medicine_list  SET medicineName = ?, startDate = ?, endDate = ?, sunday = ?, monday = ?, tuesday = ?, wednesday = ?, thursday = ?, friday = ?, saturday = ?, BeforeBreakfast = ?, AfterBreakfast = ?, BeforeLunch = ?, AfterLunch = ?, BeforeDinner = ?, AfterDinner = ? WHERE id = ? AND user_id = ?`,
+            [
+                medicineName,
                 startDate,
                 endDate,
                 days.sunday ? 1 : 0,
@@ -160,38 +168,17 @@ export function EditMedicineForm(result) {
                 days.thursday ? 1 : 0,
                 days.friday ? 1 : 0,
                 days.saturday ? 1 : 0,
-                timing.BeforeBreakfast ? subtractMinutes(med.breakfast) : "",
-                timing.AfterBreakfast ? med.breakfast : "",
-                timing.BeforeLunch ? subtractMinutes(med.lunch) : "",
-                timing.AfterLunch ? med.lunch : "",
-                timing.BeforeDinner ? subtractMinutes(med.dinner) : "",
-                timing.AfterDinner ? med.dinner : "",
+                timing.BeforeBreakfast ? subtractMinutes(user[0].breakfast) : "",
+                timing.AfterBreakfast ? user[0].breakfast : "",
+                timing.BeforeLunch ? subtractMinutes(user[0].lunch) : "",
+                timing.AfterLunch ? user[0].lunch : "",
+                timing.BeforeDinner ? subtractMinutes(user[0].dinner) : "",
+                timing.AfterDinner ? user[0].dinner : "",
                 med.id,
-                med.user_id,)
-
-        // const response = db.runAsync(`UPDATE medicine_list  SET medicineName = ?, startDate = ?, endDate = ?, sunday = ?, monday = ?, tuesday = ?, wednesday = ?, thursday = ?, friday = ?, saturday = ?, BeforeBreakfast = ?, AfterBreakfast = ?, BeforeLunch = ?, AfterLunch = ?, BeforeDinner = ?, AfterDinner = ? WHERE id = ? AND user_id = ?`,
-        //     [
-        //         medicineName,
-        //         startDate,
-        //         endDate,
-        //         days.sunday ? 1 : 0,
-        //         days.monday ? 1 : 0,
-        //         days.tuesday ? 1 : 0,
-        //         days.wednesday ? 1 : 0,
-        //         days.thursday ? 1 : 0,
-        //         days.friday ? 1 : 0,
-        //         days.saturday ? 1 : 0,
-        //         timing.BeforeBreakfast ? subtractMinutes(med.breakfast) : "",
-        //         timing.AfterBreakfast ? med.breakfast : "",
-        //         timing.BeforeLunch ? subtractMinutes(med.lunch) : "",
-        //         timing.AfterLunch ? med.lunch : "",
-        //         timing.BeforeDinner ? subtractMinutes(med.dinner) : "",
-        //         timing.AfterDinner ? med.dinner : "",
-        //         med.id,
-        //         med.user_id,
-        //     ],)
-        // Alert.alert("Medicine Updated");
-        // navigation.goBack();
+                med.user_id
+            ],)
+        Alert.alert("Medicine Updated");
+        navigation.goBack();
     };
 
     return (
@@ -400,6 +387,7 @@ export function EditMedicineForm(result) {
                         </TouchableOpacity>
                     </View>
                 </View>
+
                 <TouchableOpacity onPress={handleSave} style={styles.saveBtnContainer}>
                     <Text style={styles.saveBtn}>UPDATE MEDICINE</Text>
                 </TouchableOpacity>

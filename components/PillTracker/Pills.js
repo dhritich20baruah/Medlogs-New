@@ -123,7 +123,7 @@ export function Medicine(users) {
 
   const fetchMeds = async () => {
     const response = await db.getAllAsync(`select * from medicine_list where user_id = ?`, [userID])
-    setMedicationList(response)
+    setMedicationList(response);
   }
 
   const calculateDuration = (startDate, endDate) => {

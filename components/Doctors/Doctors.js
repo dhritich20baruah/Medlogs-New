@@ -13,7 +13,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import FontAwesome from "@expo/vector-icons/FontAwesome6";
 import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
 import { useNavigation } from "@react-navigation/native";
-// import call from "react-native-phone-call";
+// import * as Linking from 'expo-linking';
 
 export default function Doctors({ route }) {
     const { users } = route.params;
@@ -74,12 +74,11 @@ export function DoctorsScreen(users) {
 
     //CALL
     const triggerCall = (phoneNo) => {
-        // const args = {
-        //     number: phoneNo, // String value with the number to call
-        //     prompt: true, // Boolean value to prompt the user or not, default: true
-        // };
-
-        // call(args).catch(console.error);
+        // if (phoneNo) {
+        //     Linking.openURL(`tel:${phoneNumber}`);
+        // } else {
+        //     alert("No contact number available");
+        // }
     };
 
     //DELETE DOCTOR'S INFORMATION
@@ -169,7 +168,7 @@ export function DoctorsScreen(users) {
                                             textAlign: "center",
                                             fontSize: 20,
                                             fontWeight: "600",
-                                            color: "#800000",
+                                            color: "#492323ff",
                                         }}
                                     >
                                         {item.name}
@@ -179,7 +178,7 @@ export function DoctorsScreen(users) {
                                             textAlign: "center",
                                             fontSize: 16,
                                             fontWeight: "400",
-                                            color: "#800000",
+                                            color: "#492323ff",
                                         }}
                                     >
                                         {item.specialty}
@@ -189,7 +188,7 @@ export function DoctorsScreen(users) {
                                             textAlign: "center",
                                             fontSize: 16,
                                             fontWeight: "400",
-                                            color: "#800000",
+                                            color: "#492323ff",
                                         }}
                                     >
                                         {item.contactNumber}
@@ -199,7 +198,7 @@ export function DoctorsScreen(users) {
                                             textAlign: "center",
                                             fontSize: 16,
                                             fontWeight: "400",
-                                            color: "#800000",
+                                            color: "#492323ff",
                                         }}
                                     >
                                         {item.address}
@@ -209,7 +208,7 @@ export function DoctorsScreen(users) {
                                             textAlign: "center",
                                             fontSize: 16,
                                             fontWeight: "400",
-                                            color: "#800000",
+                                            color: "#492323ff",
                                         }}
                                     >
                                         {item.prescription}
@@ -219,7 +218,7 @@ export function DoctorsScreen(users) {
                                             textAlign: "center",
                                             fontSize: 16,
                                             fontWeight: "400",
-                                            color: "#800000",
+                                            color: "#492323ff",
                                         }}
                                     >
                                         Last Visited:
@@ -230,7 +229,7 @@ export function DoctorsScreen(users) {
                                             textAlign: "center",
                                             fontSize: 16,
                                             fontWeight: "400",
-                                            color: "#800000",
+                                            color: "#492323ff",
                                         }}
                                     >
                                         Next Visit:
@@ -244,7 +243,7 @@ export function DoctorsScreen(users) {
                                             marginVertical: 20,
                                         }}
                                     >
-                                        <TouchableOpacity
+                                        {/* <TouchableOpacity
                                             onPress={() => triggerCall(item.contactNumber)}
                                         >
                                             <FontAwesome
@@ -252,7 +251,7 @@ export function DoctorsScreen(users) {
                                                 size={40}
                                                 color="#800000"
                                             />
-                                        </TouchableOpacity>
+                                        </TouchableOpacity> */}
                                         <TouchableOpacity
                                             onPress={() =>
                                                 shareDoctorDetails(

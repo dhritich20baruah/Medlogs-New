@@ -24,7 +24,6 @@ export function AddDoctorForm(users) {
   const navigation = useNavigation();
   const db = useSQLiteContext();
   const userInfo = users.users;
-  console.log(userInfo);
   const userID = 1
   const [date, setDate] = useState(new Date());
   const [name, setName] = useState("");

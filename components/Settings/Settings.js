@@ -60,7 +60,6 @@ export function SettingsScreen(user) {
     async function fetchUsers() {
         const result = await db.getAllAsync("SELECT * FROM userData WHERE id = ?", [userID]);
         setUsers(result)
-        console.log(result)
     }
 
     const deleteProfile = async () => {
@@ -153,7 +152,7 @@ export function SettingsScreen(user) {
                     onPress={() => setModalVisible(true)}
                 >
                     <Text style={styles.btnText}>My Profile</Text>
-                    <FontAwesome name="circle-arrow-right" size={20} color="#ffffff" />
+                    <FontAwesome name="circle-arrow-right" size={20} color="#800000" />
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.touch}
@@ -162,21 +161,21 @@ export function SettingsScreen(user) {
                     }}
                 >
                     <Text style={styles.btnText}>Edit Profile</Text>
-                    <FontAwesome name="circle-arrow-right" size={20} color="#ffffff" />
+                    <FontAwesome name="circle-arrow-right" size={20} color="#800000" />
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.touch}
                     onPress={() => setDeleteVisible(true)}
                 >
                     <Text style={styles.btnText}>Delete Profile</Text>
-                    <FontAwesome name="circle-arrow-right" size={20} color="#ffffff" />
+                    <FontAwesome name="circle-arrow-right" size={20} color="#800000" />
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.touch}
                     onPress={() => setExportModalVisible(true)}
                 >
                     <Text style={styles.btnText}>Export Data</Text>
-                    <FontAwesome name="circle-arrow-right" size={20} color="#ffffff" />
+                    <FontAwesome name="circle-arrow-right" size={20} color="#800000" />
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.touch}
@@ -185,11 +184,11 @@ export function SettingsScreen(user) {
                     }}
                 >
                     <Text style={styles.btnText}>Privacy Policy</Text>
-                    <FontAwesome name="circle-arrow-right" size={20} color="#ffffff" />
+                    <FontAwesome name="circle-arrow-right" size={20} color="#800000" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.touch} onPress={openExternalURL}>
                     <Text style={styles.btnText}>User Manual</Text>
-                    <FontAwesome name="circle-arrow-right" size={20} color="#ffffff" />
+                    <FontAwesome name="circle-arrow-right" size={20} color="#800000" />
                 </TouchableOpacity>
                 <Text
                     style={{
@@ -200,7 +199,7 @@ export function SettingsScreen(user) {
                         marginTop: 50,
                     }}
                 >
-                    Version 1.0.0
+                    Version 2.0.0
                 </Text>
             </View>
             <Modal
@@ -400,7 +399,7 @@ const styles = StyleSheet.create({
         flexDirection: "column",
     },
     touch: {
-        backgroundColor: "#800000",
+        backgroundColor: "white",
         margin: 10,
         padding: 10,
         borderRadius: 15,
@@ -412,7 +411,7 @@ const styles = StyleSheet.create({
     btnText: {
         fontSize: 20,
         margin: 2,
-        color: "white",
+        color: "#800000",
     },
     centeredView: {
         flex: 1,

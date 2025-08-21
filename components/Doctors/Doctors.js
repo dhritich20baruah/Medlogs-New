@@ -4,7 +4,6 @@ import {
     View,
     StyleSheet,
     TouchableOpacity,
-    SafeAreaView,
     Modal,
     Share,
     Alert,
@@ -13,7 +12,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import FontAwesome from "@expo/vector-icons/FontAwesome6";
 import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
 import { useNavigation } from "@react-navigation/native";
-// import * as Linking from 'expo-linking';
+import * as Linking from 'expo-linking';
 
 export default function Doctors({ route }) {
     const { users } = route.params;
@@ -74,11 +73,11 @@ export function DoctorsScreen(users) {
 
     //CALL
     const triggerCall = (phoneNo) => {
-        // if (phoneNo) {
-        //     Linking.openURL(`tel:${phoneNumber}`);
-        // } else {
-        //     alert("No contact number available");
-        // }
+        if (phoneNo) {
+            Linking.openURL(`tel:${phoneNo}`);
+        } else {
+            alert("No contact number available");
+        }
     };
 
     //DELETE DOCTOR'S INFORMATION
@@ -243,7 +242,7 @@ export function DoctorsScreen(users) {
                                             marginVertical: 20,
                                         }}
                                     >
-                                        {/* <TouchableOpacity
+                                        <TouchableOpacity
                                             onPress={() => triggerCall(item.contactNumber)}
                                         >
                                             <FontAwesome
@@ -251,7 +250,7 @@ export function DoctorsScreen(users) {
                                                 size={40}
                                                 color="#800000"
                                             />
-                                        </TouchableOpacity> */}
+                                        </TouchableOpacity>
                                         <TouchableOpacity
                                             onPress={() =>
                                                 shareDoctorDetails(

@@ -28,7 +28,7 @@ export function Medicine(users) {
   const [selectedMed, setSelectedMed] = useState([])
 
   useFocusEffect(
-    useCallback(()=>{
+    useCallback(() => {
       fetchMeds();
     }, [])
   );
@@ -45,28 +45,98 @@ export function Medicine(users) {
     fetchMeds();
   }, []);
 
- Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
+  useEffect(() => {
+    const setupNotifications = async () => {
+      await scheduleMedicineNotifications(medicationList)
+    };
+    if(medicationList.length > 0){
+      setupNotifications()
+    }
+  }, [medicationList])
 
-// Second, call scheduleNotificationAsync()
-Notifications.scheduleNotificationAsync({
-  content: {
-    title: 'Look at that notification',
-    body: "I'm so proud of myself!",
-  },
-  trigger: null,
-});
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowBanner: true,
+      shouldShowList: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    }),
+  });
+
+  function getNextTriggerDate(timeString, weekday) {
+    const [hour, minute] = timeString.split(":").map(Number);
+
+    let trigger = new Date();
+    trigger.setHours(hour);
+    trigger.setMinutes(minute);
+    trigger.setSeconds(0);
+
+    trigger.setDate(trigger.getDate() + ((7 + weekday - trigger.getDay()) % 7));
+
+    return trigger;
+  }
+
+  async function scheduleMedicineNotifications(meds) {
+    for (const med of meds) {
+      const { medicineName, startDate, endDate } = med;
+
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      //Weekday mapping
+      const weekdays = [
+        { key: "sunday", value: med.sunday, jsDay: 0 },
+        { key: "monday", value: med.monday, jsDay: 1 },
+        { key: "tuesday", value: med.tuesday, jsDay: 2 },
+        { key: "wednesday", value: med.wednesday, jsDay: 3 },
+        { key: "thursday", value: med.thursday, jsDay: 4 },
+        { key: "friday", value: med.friday, jsDay: 5 },
+        { key: "saturday", value: med.saturday, jsDay: 6 },
+      ];
+
+      //All possible times
+      const timeSlots = [
+        "BeforeBreakfast",
+        "AfterBreakfast",
+        "BeforeLunch",
+        "AfterLunch",
+        "BeforeDinner",
+        "AfterDinner",
+      ];
+
+      for (const timeKey of timeSlots) {
+        if (med[timeKey]) {
+          //Loop over weekdays
+          weekdays.forEach(async (day) => {
+            if (day.value === 1) {
+              const triggerDate = getNextTriggerDate(med[timeKey], day.jsDay);
+
+              //Only schedule if within start-end date range
+              if (triggerDate >= start && triggerDate <= end) {
+                await Notifications.scheduleNotificationAsync({
+                  content: {
+                    title: "💊 Medicine Reminder",
+                    body: `${medicineName} - ${timeKey.replace(/([A-Z])/g, " $1")}`,
+                    sound: "default",
+                  },
+                  trigger: {
+                    hour: Number(med[timeKey].split(":")[0]),
+                    minute: Number(med[timeKey].split(":")[1]),
+                    weekday: day.jsDay === 0 ? 7 : day.jsDay,
+                    repeats: true,
+                  }
+                })
+              }
+            }
+          })
+        }
+      }
+    }
+  }
 
   const fetchMeds = async () => {
     const response = await db.getAllAsync(`select * from medicine_list where user_id = ?`, [userID])
     setMedicationList(response);
-    console.log(response)
   }
 
   const calculateDuration = (startDate, endDate) => {
@@ -95,7 +165,7 @@ Notifications.scheduleNotificationAsync({
     }
   }
 
-   const today = new Date();
+  const today = new Date();
 
   const weekday = today.toLocaleDateString('en-US', { weekday: 'long' }); // e.g., Monday
   const date = today.toLocaleDateString('en-GB', {
@@ -104,7 +174,7 @@ Notifications.scheduleNotificationAsync({
     year: 'numeric'
   });
 
-  const EditMedicine = async (id) =>{
+  const EditMedicine = async (id) => {
     const result = await db.getAllAsync(`SELECT * FROM medicine_list WHERE id = ? AND user_id = ?`, [id, userID]);
     setSelectedMed(result);
     await navigation.navigate("Edit Medicine", result)
@@ -139,11 +209,11 @@ Notifications.scheduleNotificationAsync({
               <Text style={styles.textStyle1}>{item.medicineName}</Text>
               <Text style={styles.textStyle2}>Started on: <Text style={styles.textStyle3}>{item.startDate.split("-").reverse().join("-")}</Text></Text>
               <Text style={styles.textStyle2}>Duration:
-                <Text style={styles.textStyle3}> {calculateDuration(item.startDate, item.endDate)} Days</Text> 
+                <Text style={styles.textStyle3}> {calculateDuration(item.startDate, item.endDate)} Days</Text>
               </Text>
-              <View style={{display: "flex", flexDirection: "row"}}>
+              <View style={{ display: "flex", flexDirection: "row" }}>
                 <View>
-                <Text style={styles.textStyle2}>Timings:</Text>
+                  <Text style={styles.textStyle2}>Timings:</Text>
                 </View>
                 <View style={styles.timings}>
                   <Text style={[styles.textStyle3, item.BeforeBreakfast ? { display: "flex" } : { display: "none" }]}>{item.BeforeBreakfast ? "Before Breakfast" : ""}</Text>
@@ -155,7 +225,7 @@ Notifications.scheduleNotificationAsync({
                 </View>
               </View>
               <View style={styles.actions}>
-                <TouchableOpacity  onPress={()=>EditMedicine(item.id)} >
+                <TouchableOpacity onPress={() => EditMedicine(item.id)} >
                   <FontAwesome name="pen-to-square" size={25} color="#800000" />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => displayDeleteModal(item.id)}>
@@ -235,7 +305,7 @@ const styles = StyleSheet.create({
   },
   header2: {
     marginVertical: 10,
-    fontStyle: "italic", 
+    fontStyle: "italic",
     fontSize: 20,
     fontWeight: 'semibold',
     color: "black",

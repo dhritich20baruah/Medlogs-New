@@ -49,7 +49,7 @@ export function Medicine(users) {
     const setupNotifications = async () => {
       await scheduleMedicineNotifications(medicationList)
     };
-    if(medicationList.length > 0){
+    if (medicationList.length > 0) {
       setupNotifications()
     }
   }, [medicationList])
@@ -76,7 +76,12 @@ export function Medicine(users) {
     return trigger;
   }
 
+  //Store active notification IDs:
+  const scheduleNotificationIds = [];
+
   async function scheduleMedicineNotifications(meds) {
+  await Notifications.cancelAllScheduledNotificationsAsync();
+
     for (const med of meds) {
       const { medicineName, startDate, endDate } = med;
 
@@ -125,12 +130,31 @@ export function Medicine(users) {
                     weekday: day.jsDay === 0 ? 7 : day.jsDay,
                     repeats: true,
                   }
-                })
+                });
+                scheduleMedicineNotifications.push(id);
               }
             }
-          })
+          });
         }
       }
+      //Cancel notification after end date
+      const endDateCancel = new Date(end);
+      endDateCancel.setHours(23, 59, 0, 0);
+
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: '⏹ Medicine Schedule Ended',
+          body: `${medicineName} reminders have been stopped.`,
+        },
+        trigger: { type: 'date', date: endDateCancel }, // endDateCancel is a Date
+      });
+
+      //Actually cancel the notifications
+      setTimeout(async () => {
+        for (const id of scheduleNotificationIds) {
+          await Notifications.cancelAllScheduledNotificationsAsync(id);
+        }
+      }, endDateCancel.getTime() - Date.now());
     }
   }
 
@@ -184,24 +208,6 @@ export function Medicine(users) {
     <View style={styles.container}>
       <Text style={styles.header}>{date}</Text>
       <Text style={styles.header2}>Your Medication Schedule for {weekday}</Text>
-      {/* {hasCalendarPermission ? (
-        <>
-          <Text style={styles.statusText}>Calendar permission granted!</Text>
-          <Button
-            title="Add Test Medication Reminder"
-            onPress={async () => {
-              const calendarId = await createMedicationCalendar();
-              if (calendarId) {
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1); // Tomorrow's date
-                await addMedicationEvent(calendarId, 'Ibuprofen', '200mg', tomorrow.toISOString().split('T')[0], '09:00');
-              }
-            }}
-          />
-        </>
-      ) : (
-        <Text style={styles.statusText}>Waiting for calendar permission...</Text>
-      )} */}
       <ScrollView style={styles.scrollArea} >
         {medicationList.map((item, index) => {
           return (

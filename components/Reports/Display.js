@@ -15,22 +15,22 @@ import { shareAsync } from "expo-sharing";
 import { useNavigation } from "@react-navigation/native";
 
 export default function Display({ route }){
-    const { uri } = route.params;
-    console.log(route.params)
+    const { uri, doctor, notes, id } = route.params;
     return(
         <SQLiteProvider databaseName="Medlogs.db">
-            <DisplayedImages uri={uri} />
+            <DisplayedImages uri={uri} doctor={doctor} notes={notes} id={id}/>
         </SQLiteProvider>
     )
 }
-export function DisplayedImages(uri) {
+export function DisplayedImages(items) {
+  console.log(items)
   const db = useSQLiteContext();
   const [permission, setPermission] = useState(null);
   const navigation = useNavigation();
-  const [doctor, ] = useState(uri.doctor);
-  const [imageId, ] = useState(uri.imageId);
-  const [notes, ] = useState(uri.notes);
-  const [url, ] = useState(uri.uri)
+  const [doctor, ] = useState(items.doctor);
+  const [imageId, ] = useState(items.imageId);
+  const [notes, ] = useState(items.notes);
+  const [url, ] = useState(items.uri)
 
   useEffect(() => {
     (async () => {
@@ -73,23 +73,23 @@ export function DisplayedImages(uri) {
     }
   };
   const handleShare = () => {
-    shareAsync(uri);
+    shareAsync(url);
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <Image source={{uri: url}} style={styles.image} />
-      <Text style={styles.imageText}>Advised by: {doctor}</Text>
-      <Text style={styles.imageText}>Notes: {notes}</Text>
+      <Text style={styles.imageText}>Advised by: <Text style={{fontWeight: "bold"}}>{doctor}</Text></Text>
+      <Text style={styles.imageText}>Notes: <Text style={{fontWeight:"bold"}}>{notes}</Text></Text>
       <View style={{ display: "flex", flexDirection: "row" }}>
         <TouchableOpacity
-          style={{ margin: 20, padding: 10, elevation: 18 }}
+          style={{ margin: 10, padding: 10, elevation: 18 }}
           onPress={handleDelete}
         >
           <FontAwesome name="trash-can" size={30} color="#800000" />
         </TouchableOpacity>
         <TouchableOpacity
-          style={{ margin: 20, padding: 10, elevation: 18 }}
+          style={{ margin: 10, padding: 10, elevation: 18 }}
           onPress={handleShare}
         >
           <FontAwesome name="share-nodes" size={30} color="#800000" />

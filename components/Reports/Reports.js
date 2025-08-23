@@ -94,12 +94,7 @@ export function ReportGrid(users) {
                 renderItem={({ item }) => (
                     <TouchableOpacity
                         onPress={() =>
-                            navigation.navigate("Image", {
-                                uri: item.uri,
-                                imageId: item.id,
-                                doctor: item.doctor,
-                                notes: item.notes,
-                            })
+                            navigation.navigate("Image", item)
                         }
                     >
                         <Image source={{ uri: item.uri }} style={styles.photo} />

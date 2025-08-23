@@ -63,105 +63,201 @@ export function Medicine(users) {
     }),
   });
 
-  function getNextTriggerDate(timeString, weekday) {
-    const [hour, minute] = timeString.split(":").map(Number);
+  // function getNextTriggerDate(timeString, weekday) {
+  //   const [hour, minute] = timeString.split(":").map(Number);
 
-    let trigger = new Date();
-    trigger.setHours(hour);
-    trigger.setMinutes(minute);
-    trigger.setSeconds(0);
+  //   let trigger = new Date();
+  //   trigger.setHours(hour);
+  //   trigger.setMinutes(minute);
+  //   trigger.setSeconds(0);
 
-    trigger.setDate(trigger.getDate() + ((7 + weekday - trigger.getDay()) % 7));
+  //   trigger.setDate(trigger.getDate() + ((7 + weekday - trigger.getDay()) % 7));
 
-    return trigger;
-  }
+  //   return trigger;
+  // }
 
   //Store active notification IDs:
-  const scheduleNotificationIds = [];
+  // const scheduleNotificationIds = [];
 
-  async function scheduleMedicineNotifications(meds) {
-  await Notifications.cancelAllScheduledNotificationsAsync();
+  // async function scheduleMedicineNotifications(meds) {
+  // await Notifications.cancelAllScheduledNotificationsAsync();
 
-    for (const med of meds) {
-      const { medicineName, startDate, endDate } = med;
+  //   for (const med of meds) {
+  //     const { medicineName, startDate, endDate } = med;
 
-      const start = new Date(startDate);
-      const end = new Date(endDate);
+  //     const start = new Date(startDate);
+  //     const end = new Date(endDate);
 
-      //Weekday mapping
-      const weekdays = [
-        { key: "sunday", value: med.sunday, jsDay: 0 },
-        { key: "monday", value: med.monday, jsDay: 1 },
-        { key: "tuesday", value: med.tuesday, jsDay: 2 },
-        { key: "wednesday", value: med.wednesday, jsDay: 3 },
-        { key: "thursday", value: med.thursday, jsDay: 4 },
-        { key: "friday", value: med.friday, jsDay: 5 },
-        { key: "saturday", value: med.saturday, jsDay: 6 },
-      ];
+  //     //Weekday mapping
+  //     const weekdays = [
+  //       { key: "sunday", value: med.sunday, jsDay: 0 },
+  //       { key: "monday", value: med.monday, jsDay: 1 },
+  //       { key: "tuesday", value: med.tuesday, jsDay: 2 },
+  //       { key: "wednesday", value: med.wednesday, jsDay: 3 },
+  //       { key: "thursday", value: med.thursday, jsDay: 4 },
+  //       { key: "friday", value: med.friday, jsDay: 5 },
+  //       { key: "saturday", value: med.saturday, jsDay: 6 },
+  //     ];
 
-      //All possible times
-      const timeSlots = [
-        "BeforeBreakfast",
-        "AfterBreakfast",
-        "BeforeLunch",
-        "AfterLunch",
-        "BeforeDinner",
-        "AfterDinner",
-      ];
+  //     //All possible times
+  //     const timeSlots = [
+  //       "BeforeBreakfast",
+  //       "AfterBreakfast",
+  //       "BeforeLunch",
+  //       "AfterLunch",
+  //       "BeforeDinner",
+  //       "AfterDinner",
+  //     ];
 
-      for (const timeKey of timeSlots) {
-        if (med[timeKey]) {
-          //Loop over weekdays
-          weekdays.forEach(async (day) => {
-            if (day.value === 1) {
-              const triggerDate = getNextTriggerDate(med[timeKey], day.jsDay);
+  //     for (const timeKey of timeSlots) {
+  //       if (med[timeKey]) {
+  //         //Loop over weekdays
+  //         weekdays.forEach(async (day) => {
+  //           if (day.value === 1) {
+  //             const triggerDate = getNextTriggerDate(med[timeKey], day.jsDay);
 
-              //Only schedule if within start-end date range
-              if (triggerDate >= start && triggerDate <= end) {
-                await Notifications.scheduleNotificationAsync({
-                  content: {
-                    title: "💊 Medicine Reminder",
-                    body: `${medicineName} - ${timeKey.replace(/([A-Z])/g, " $1")}`,
-                    sound: "default",
-                  },
-                  trigger: {
-                    hour: Number(med[timeKey].split(":")[0]),
-                    minute: Number(med[timeKey].split(":")[1]),
-                    weekday: day.jsDay === 0 ? 7 : day.jsDay,
-                    repeats: true,
-                  }
-                });
-                scheduleMedicineNotifications.push(id);
+  //             //Only schedule if within start-end date range
+  //             if (triggerDate >= start && triggerDate <= end) {
+  //               await Notifications.scheduleNotificationAsync({
+  //                 content: {
+  //                   title: "💊 Medicine Reminder",
+  //                   body: `${medicineName} - ${timeKey.replace(/([A-Z])/g, " $1")}`,
+  //                   sound: "default",
+  //                 },
+  //                 trigger: {
+  //                   hour: Number(med[timeKey].split(":")[0]),
+  //                   minute: Number(med[timeKey].split(":")[1]),
+  //                   weekday: day.jsDay === 0 ? 7 : day.jsDay,
+  //                   repeats: true,
+  //                 }
+  //               });
+  //               scheduleMedicineNotifications.push(id);
+  //             }
+  //           }
+  //         });
+  //       }
+  //     }
+  //     //Cancel notification after end date
+  //     const endDateCancel = new Date(end);
+  //     endDateCancel.setHours(23, 59, 0, 0);
+
+  //     await Notifications.scheduleNotificationAsync({
+  //       content: {
+  //         title: '⏹ Medicine Schedule Ended',
+  //         body: `${medicineName} reminders have been stopped.`,
+  //       },
+  //       trigger: { type: 'date', date: endDateCancel }, // endDateCancel is a Date
+  //     });
+
+  //     //Actually cancel the notifications
+  //     setTimeout(async () => {
+  //       for (const id of scheduleNotificationIds) {
+  //         await Notifications.cancelAllScheduledNotificationsAsync(id);
+  //       }
+  //     }, endDateCancel.getTime() - Date.now());
+  //   }
+  // }
+
+  async function scheduleMedicineNotifications(medications) {
+    const now = new Date();
+    const notificationIds = []; // Array to store notification IDs
+
+    for (const med of medications) {
+      const startDate = new Date(med.startDate);
+      const endDate = new Date(med.endDate);
+
+      // Check if the current date is within the medication period
+      if (now >= startDate && now <= endDate) {
+        const daysOfWeek = [
+          med.sunday,
+          med.monday,
+          med.tuesday,
+          med.wednesday,
+          med.thursday,
+          med.friday,
+          med.saturday,
+        ];
+
+        // Get today's day of the week (0-6 where 0 is Sunday)
+        const today = now.getDay();
+
+        if (daysOfWeek[today]) {
+          // Schedule notifications for the relevant times
+          const times = [
+            { time: med.AfterBreakfast, label: "After Breakfast" },
+            { time: med.AfterDinner, label: "After Dinner" },
+            { time: med.AfterLunch, label: "After Lunch" },
+            { time: med.BeforeBreakfast, label: "Before Breakfast" },
+            { time: med.BeforeDinner, label: "Before Dinner" },
+            { time: med.BeforeLunch, label: "Before Lunch" },
+          ];
+          for (const { time, label } of times) {
+            if (time) {
+              const [hours, minutes] = time.split(":").map(Number);
+              const notificationTime = new Date(now);
+              notificationTime.setHours(hours, minutes, 0, 0);
+
+              const hour = notificationTime.getHours();
+              const min = notificationTime.getMinutes();
+
+              // Only schedule future notifications
+              if (notificationTime > now) {
+                try {
+                  const id = await Notifications.scheduleNotificationAsync({
+                    content: {
+                      title: `💊 Time to take your medication: ${med.medicineName}`,
+                      body: `${label}`,
+                    },
+                    trigger: {
+                      hour: hour,
+                      minute: min,
+                      repeats: true,
+                    },
+                  });
+                  console.log("Notification ID on scheduling", id);
+                  notificationIds.push(id); // Store the notification ID
+                } catch (error) {
+                  console.error("Error scheduling notification:", error);
+                }
               }
             }
-          });
+          }
         }
       }
-      //Cancel notification after end date
-      const endDateCancel = new Date(end);
-      endDateCancel.setHours(23, 59, 0, 0);
-
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: '⏹ Medicine Schedule Ended',
-          body: `${medicineName} reminders have been stopped.`,
-        },
-        trigger: { type: 'date', date: endDateCancel }, // endDateCancel is a Date
-      });
-
-      //Actually cancel the notifications
-      setTimeout(async () => {
-        for (const id of scheduleNotificationIds) {
-          await Notifications.cancelAllScheduledNotificationsAsync(id);
-        }
-      }, endDateCancel.getTime() - Date.now());
     }
+
+    return notificationIds; // Return all notification IDs
   }
 
   const fetchMeds = async () => {
-    const response = await db.getAllAsync(`select * from medicine_list where user_id = ?`, [userID])
-    setMedicationList(response);
-  }
+    const response = await db.getAllAsync(
+      `SELECT * FROM medicine_list WHERE user_id = ?`,
+      [userID]
+    );
+
+    const todayKey = getTodayKey(); // e.g. "monday"
+    const today = new Date();
+
+    const filtered = response.filter(med => {
+      // check if medicine is active for today (day = 1)
+      const isToday = med[todayKey] === 1;
+
+      // check if today is within startDate and endDate
+      const start = new Date(med.startDate);
+      const end = new Date(med.endDate);
+      const inDateRange = today >= start && today <= end;
+
+      return isToday && inDateRange;
+    });
+
+    setMedicationList(filtered);
+  };
+
+  const getTodayKey = () => {
+    const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+    return days[new Date().getDay()];
+  };
+
 
   const calculateDuration = (startDate, endDate) => {
     const start = new Date(startDate);

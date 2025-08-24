@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { Text, StyleSheet, TouchableOpacity, View, Alert, Modal, ScrollView } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Calendar from 'expo-calendar';
@@ -6,6 +6,10 @@ import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
 import FontAwesome from "@expo/vector-icons/FontAwesome6";
 import { useNavigation } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
+import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-google-mobile-ads';
+
+const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-4558946228793580/5407601006';
+
 
 export default function Pills({ route }) {
   const { users } = route.params;
@@ -26,6 +30,7 @@ export function Medicine(users) {
   const [modalVisible, setModalVisible] = useState(false);
   const [medId, setMedID] = useState("")
   const [selectedMed, setSelectedMed] = useState([])
+  const bannerRef = useRef(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -370,6 +375,7 @@ export function Medicine(users) {
       >
         <Text style={styles.btnText}>List All Medicine</Text>
       </TouchableOpacity>
+      <BannerAd ref={bannerRef} unitId={adUnitId} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
     </View>
   );
 }
@@ -439,7 +445,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 25,
     position: 'absolute',
-    bottom: 60,
+    bottom: 130,
     right: 20,
     elevation: 4,
   },
@@ -449,7 +455,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 25,
     position: 'absolute',
-    bottom: 60,
+    bottom: 130,
     left: 20,
     elevation: 4,
   },

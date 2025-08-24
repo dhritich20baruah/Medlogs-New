@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Text, View, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-
 import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
+import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-google-mobile-ads';
+
+const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-4558946228793580/5407601006';
 
 export default function History({ route }) {
   const { users } = route.params
@@ -24,7 +26,7 @@ export function HistoryScreen(users) {
   const [showDate, setShowDate] = useState(false);
   const [date, setDate] = useState(new Date());
 
-  // const bannerRef = useRef(null);
+  const bannerRef = useRef(null);
 
   const toggleShowDate = () => {
     setShowDate(!showDate);
@@ -259,6 +261,9 @@ export function HistoryScreen(users) {
           </View>
         }
 
+      </View>
+      <View style={{marginTop: 20}}>
+          <BannerAd ref={bannerRef} unitId={adUnitId} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}/>
       </View>
     </ScrollView>
   );

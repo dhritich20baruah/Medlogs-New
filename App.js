@@ -22,9 +22,14 @@ import PrivacyPolicy from './components/Settings/PrivacyPolicy';
 import EditProfile from './components/Settings/EditProfile';
 import History from './components/History/History';
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import "expo-dev-client";
+import { BannerAd, BannerAdSize, TestIds, useForeground, } from 'react-native-google-mobile-ads';
+
+const adUnitId = __DEV__
+  ? TestIds.ADAPTIVE_BANNER
+  : "ca-app-pub-4558946228793580/7740737419";
 
 const initializeDB = async (db) => {
   try {
@@ -73,6 +78,8 @@ export function UserForm() {
   const [usersExist, setUsersExist] = useState(true);
   const isFocused = useIsFocused();
   const image = require("./assets/background.jpg");
+
+  const bannerRef = useRef(null);
 
   async function fetchUsers() {
     const result = await db.getAllAsync("SELECT * FROM userData");
@@ -487,6 +494,11 @@ export function UserForm() {
             </ScrollView>
           </View>
         </Modal>
+        <BannerAd
+          ref={bannerRef}
+          unitId={adUnitId}
+          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+        />
       </ImageBackground>
     </View>
   );

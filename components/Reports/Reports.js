@@ -13,6 +13,9 @@ import * as MediaLibrary from "expo-media-library";
 import { useFocusEffect } from "@react-navigation/native";
 import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
 import { useNavigation } from "@react-navigation/native";
+import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-google-mobile-ads';
+
+const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-4558946228793580/5407601006';
 
 export default function Reports({ route }) {
     const { users } = route.params;
@@ -29,11 +32,12 @@ export function ReportGrid(users) {
     const navigation = useNavigation()
     const userInfo = users.users;
     const userID = userInfo[0].id;
-    const [hasMediaLibraryPermission, setHasMediaLibraryPermission] =
-        useState(null);
+    const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState(null);
     const [photos, setPhotos] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredPhotos, setFilteredPhotos] = useState([]);
+
+    const bannerRef = useRef(null);
 
     const toggleCamera = () => {
         navigation.navigate("Camera", { users });
@@ -110,6 +114,7 @@ export function ReportGrid(users) {
                     style={styles.btnText}
                 />
             </TouchableOpacity>
+            <BannerAd ref={bannerRef} unitId={adUnitId} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}/>
         </View>
     );
 }

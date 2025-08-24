@@ -12,6 +12,17 @@ import FontAwesome from "@expo/vector-icons/FontAwesome6";
 import { useNavigation } from "@react-navigation/native";
 import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
 
+import {
+    BannerAd,
+    BannerAdSize,
+    TestIds,
+    useForeground,
+} from "react-native-google-mobile-ads";
+
+const adUnitId = __DEV__
+    ? TestIds.ADAPTIVE_BANNER
+    : "ca-app-pub-4558946228793580/5407601006";
+
 const Dashboard = ({ route }) => {
     const { userID } = route.params;
     return (
@@ -36,6 +47,8 @@ export function Menu(userID) {
             lunch: "",
         },
     ])
+
+    const bannerRef = useRef(null);
 
     useEffect(() => {
         fetchUsers()
@@ -205,7 +218,7 @@ export function Menu(userID) {
                     <FontAwesome name="circle-arrow-right" size={20} color="#800000" />
                 </TouchableOpacity>
                 <TouchableOpacity
-                onPress={() => navigation.navigate("History", {
+                    onPress={() => navigation.navigate("History", {
                         users
                     })}
                     style={{
@@ -229,7 +242,7 @@ export function Menu(userID) {
                     <FontAwesome name="circle-arrow-right" size={20} color="#800000" />
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate("Settings", {
+                    onPress={() => navigation.navigate("Settings", {
                         users
                     })}
                     style={{
@@ -253,6 +266,11 @@ export function Menu(userID) {
                     <FontAwesome name="circle-arrow-right" size={20} color="#800000" />
                 </TouchableOpacity>
             </SafeAreaView>
+            <BannerAd
+                ref={bannerRef}
+                unitId={adUnitId}
+                size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+            />
         </ScrollView>
     )
 }

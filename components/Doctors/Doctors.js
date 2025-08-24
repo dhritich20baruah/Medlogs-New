@@ -13,6 +13,9 @@ import FontAwesome from "@expo/vector-icons/FontAwesome6";
 import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
 import { useNavigation } from "@react-navigation/native";
 import * as Linking from 'expo-linking';
+import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-google-mobile-ads';
+
+const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-4558946228793580/5407601006';
 
 export default function Doctors({ route }) {
     const { users } = route.params;
@@ -32,7 +35,7 @@ export function DoctorsScreen(users) {
     const [modalVisible, setModalVisible] = useState(false);
     const [doctorsDetails, setDoctorsDetails] = useState([]);
 
-    // const bannerRef = useRef(null);
+    const bannerRef = useRef(null);
 
     useFocusEffect(
         useCallback(() => {
@@ -285,7 +288,7 @@ export function DoctorsScreen(users) {
             >
                 <Text style={styles.btnText}>Add Doctor</Text>
             </TouchableOpacity>
-            {/* <BannerAd ref={bannerRef} unitId={adUnitId} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} /> */}
+            <BannerAd ref={bannerRef} unitId={adUnitId} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
         </View>
     );
 }

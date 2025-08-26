@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "medlogs_new",
-    "slug": "medlogs_new",
-    "version": "1.0.0",
+    "name": "medlogs",
+    "slug": "medlogs",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -17,10 +17,15 @@
       "infoPlist": {
         "NSCalendarsUsageDescription": "Allow $(PRODUCT_NAME) to access your calendar to add medical reminders.",
         "NSRemindersUsageDescription": "Allow $(PRODUCT_NAME) to access your reminders to add medication alerts."
+      },
+      "runtimeVersion": {
+        "policy": "appVersion"
       }
     },
     "android": {
       "permissions": [
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR",
         "android.permission.READ_CALENDAR",
         "android.permission.WRITE_CALENDAR"
       ],
@@ -29,7 +34,9 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.dhritich20baruah.medlogs_new"
+      "package": "com.dhritich20baruah.medlogs",
+      "versionCode": 2,
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -37,16 +44,19 @@
     "plugins": [
       "expo-sqlite",
       [
-         "react-native-google-mobile-ads",
-      {
-         "androidAppId": "ca-app-pub-4558946228793580~5580589882"
-      }
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-4558946228793580~5580589882"
+        }
       ]
     ],
     "extra": {
       "eas": {
-        "projectId": "235a7770-7275-4f5d-8579-0f5805006a03"
+        "projectId": "5a62e409-bba5-4c48-bd06-0339c86919df"
       }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/5a62e409-bba5-4c48-bd06-0339c86919df"
     }
   }
 }

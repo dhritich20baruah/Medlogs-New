@@ -95,11 +95,7 @@ export function Snap(users) {
 
         return (
             <SafeAreaView style={styles.container}>
-                <Image
-                    style={styles.preview}
-                    source={{ uri: "data:image/jpg;base64," + photo.base64 }}
-                />
-                <View>
+                  <View>
                     <TextInput
                         style={styles.input}
                         placeholder="Advised by"
@@ -126,6 +122,11 @@ export function Snap(users) {
                         <FontAwesome name="trash-can" size={30} color="#800000" />
                     </TouchableOpacity>
                 </View>
+                <Image
+                    style={styles.preview}
+                    source={{ uri: "data:image/jpg;base64," + photo.base64 }}
+                />
+              
             </SafeAreaView>
         );
     }

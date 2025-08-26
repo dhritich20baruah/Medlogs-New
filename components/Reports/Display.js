@@ -23,12 +23,11 @@ export default function Display({ route }){
     )
 }
 export function DisplayedImages(items) {
-  console.log(items)
   const db = useSQLiteContext();
   const [permission, setPermission] = useState(null);
   const navigation = useNavigation();
   const [doctor, ] = useState(items.doctor);
-  const [imageId, ] = useState(items.imageId);
+  const [imageId, ] = useState(items.id);
   const [notes, ] = useState(items.notes);
   const [url, ] = useState(items.uri)
 

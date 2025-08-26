@@ -54,6 +54,7 @@ export function ReportGrid(users) {
             const mediaLibraryStatus = await MediaLibrary.requestPermissionsAsync();
             setHasMediaLibraryPermission(mediaLibraryStatus.status === "granted");
         })();
+        fetchImages();
     }, []);
 
     const fetchImages = async () => {

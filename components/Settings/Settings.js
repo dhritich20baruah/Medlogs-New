@@ -66,9 +66,6 @@ export function SettingsScreen(user) {
         await db.runAsync("DELETE FROM medicine_list WHERE user_id=?", [userID]);
         console.log("medicine table removed");
 
-        await db.runAsync("DELETE FROM diagnosticReports WHERE user_id=?", [userID]);
-        console.log("diagnosticReports table removed");
-
         await db.runAsync("DELETE FROM blood_pressure WHERE user_id=?", [userID]);
         console.log("blood_pressure table removed");
 

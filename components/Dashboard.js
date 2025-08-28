@@ -98,30 +98,6 @@ export function Menu(userID) {
                     <FontAwesome name="circle-arrow-right" size={20} color="#800000" />
                 </TouchableOpacity>
                 <TouchableOpacity
-                    onPress={() => navigation.navigate("Reports & Prescriptions", {
-                        users
-                    })}
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        margin: 10,
-                        padding: 10,
-                        borderWidth: 1,
-                        borderColor: "#800000",
-                        borderRadius: 10,
-                    }}
-                >
-                    <FontAwesome name="x-ray" size={30} color="#800000" />
-                    <Text
-                        style={{ marginHorizontal: 20, color: "#800000", fontSize: 15 }}
-                    >
-                        Reports & Prescriptions
-                    </Text>
-                    <FontAwesome name="circle-arrow-right" size={20} color="#800000" />
-                </TouchableOpacity>
-                <TouchableOpacity
                     onPress={() => navigation.navigate("Blood Pressure", {
                         users
                     })}

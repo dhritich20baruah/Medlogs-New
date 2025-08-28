@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import { Text, StyleSheet, TouchableOpacity, View, Alert, Modal, ScrollView } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import * as Calendar from 'expo-calendar';
 import { SQLiteProvider, useSQLiteContext } from "expo-sqlite";
 import FontAwesome from "@expo/vector-icons/FontAwesome6";
 import { useNavigation } from "@react-navigation/native";
@@ -24,7 +23,6 @@ export function Medicine(users) {
   const db = useSQLiteContext();
   const navigation = useNavigation()
   const userInfo = users.users;
-  const [hasCalendarPermission, setHasCalendarPermission] = useState(false);
   const userID = userInfo[0].id;
   const [medicationList, setMedicationList] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -39,14 +37,6 @@ export function Medicine(users) {
   );
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Calendar.requestCalendarPermissionsAsync();
-      if (status === 'granted') {
-        setHasCalendarPermission(true);
-      } else {
-        Alert.alert('Permission Denied', 'Calendar permission is required to add events.')
-      }
-    })();
     fetchMeds();
   }, []);
 

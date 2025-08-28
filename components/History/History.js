@@ -18,7 +18,6 @@ export default function History({ route }) {
 export function HistoryScreen(users) {
   const db = useSQLiteContext();
   const userID = users.users[0].id;
-  const [diagnosticArr, setDiagnosticArr] = useState([]);
   const [pillsArr, setPillsArr] = useState([]);
   const [sugarArr, setSugarArr] = useState([]);
   const [pressureArr, setPressureArr] = useState([]);
@@ -42,11 +41,6 @@ export function HistoryScreen(users) {
   };
 
   const fetchHistory = async (day) => {
-    const reports = await db.getAllAsync(
-      "SELECT * FROM diagnosticReports WHERE user_id = ? AND date = ?",
-      [userID, day.split("-").reverse().join("-")]
-    );
-    setDiagnosticArr(reports);
 
     const medList = await db.getAllAsync(
       "SELECT * FROM medicine_list WHERE user_id = ? AND startDate <= ? AND endDate >= ?",
@@ -228,30 +222,6 @@ export function HistoryScreen(users) {
                       <Text style={styles.sugartestText}>{values.test_type} :</Text>
                       <Text style={styles.sugarValueText}>
                         {values.sugar_value} mg/dL
-                      </Text>
-                    </View>
-                  );
-                })}
-              </View>
-            )}
-            {/* Diagnostics */}
-            {diagnosticArr.length == 0 ? (
-              <View></View>
-            ) : (
-              <View style={styles.card}>
-                <Text style={styles.title2}>
-                  Diagnostic reports and prescriptions snapped on that day are:
-                </Text>
-                {diagnosticArr.map((item) => {
-                  return (
-                    <View key={item.id}>
-                      <Image source={{ uri: item.uri }} style={styles.image} />
-                      <Text style={styles.reportsText}>
-                        Advised by:{" "}
-                        <Text style={styles.textStyleSecondary}>{item.doctor}</Text>
-                      </Text>
-                      <Text style={styles.reportsText}>
-                        Notes: <Text style={styles.textStyleSecondary}>{item.notes}</Text>
                       </Text>
                     </View>
                   );
